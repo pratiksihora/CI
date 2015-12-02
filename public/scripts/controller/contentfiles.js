@@ -22,7 +22,7 @@ myApp.controller('content-filesCtrl', function ($scope, $state, $http, $statePar
         var status;
 
         if (cm_state == 7) {
-            
+
             status = "Metadata deleted for this Metadata Id.";
         }
         else if (cm_state == 5) {
@@ -722,7 +722,7 @@ myApp.controller('content-filesCtrl', function ($scope, $state, $http, $statePar
                 }
             }
             else {
-                toastr.error("Please upload thumb file or base file.");
+                toastr.error("Please upload base wallpaper file.");
             }
         }
         else if ($scope.TypeName == "Video") {
@@ -759,19 +759,30 @@ myApp.controller('content-filesCtrl', function ($scope, $state, $http, $statePar
                     function VideoUpload(vu) {
                         var data = $scope.VideoFiles[vu];
                         ContentFile.Upload('/upload' + $scope.TypeName, { file: data.file, cm_title: $scope.cm_title, other: data.other, TypeName: $scope.TypeName, MetaDataId: $scope.MetadataId, cm_id: $scope.MetaId, width: data.width, height: data.height, ct_group_id: data.ct_group_id }, function (resp) {
-                            $scope.Files = resp.data.Files;
-                            toastr.success(resp.config.data.file.name + ' Base file uploaded successfully.');
-                            vu = vu + 1;
-                            if (vu == $scope.VideoFiles.length) {
+                            if (resp.data.success) {
+                                $scope.Files = resp.data.Files;
+                                toastr.success(resp.config.data.file.name + ' Base file uploaded successfully.');
+                                vu = vu + 1;
+                                if (vu == $scope.VideoFiles.length) {
+                                    $("#thumbfile").val("");
+                                    $("#videofile").val("");
+                                    $scope.thumbfile = null;
+                                    $scope.videofile = null;
+                                    $scope.uploading = false;
+                                    ngProgress.complete();
+                                }
+                                else {
+                                    VideoUpload(vu);
+                                }
+                            }
+                            else {
                                 $("#thumbfile").val("");
                                 $("#videofile").val("");
                                 $scope.thumbfile = null;
                                 $scope.videofile = null;
+                                toastr.error(resp.data.message);
                                 $scope.uploading = false;
                                 ngProgress.complete();
-                            }
-                            else {
-                                VideoUpload(vu);
                             }
                         }, function (error) {
                             toastr.error(error);
@@ -790,7 +801,7 @@ myApp.controller('content-filesCtrl', function ($scope, $state, $http, $statePar
                 }
             }
             else {
-                toastr.error("Please upload thumb file or base file.");
+                toastr.error("Please upload base video file.");
             }
         }
         else if ($scope.TypeName == "Audio") {
@@ -831,24 +842,35 @@ myApp.controller('content-filesCtrl', function ($scope, $state, $http, $statePar
                         function AudioUpload(au) {
                             var data = $scope.AudioFiles[au];
                             ContentFile.Upload('/upload' + $scope.TypeName, { file: data.file, cm_title: $scope.cm_title, other: data.other, TypeName: $scope.TypeName, MetaDataId: $scope.MetadataId, cm_id: $scope.MetaId, width: data.width, height: data.height, ct_group_id: data.ct_group_id }, function (resp) {
-                                $scope.Files = resp.data.Files;
-                                toastr.success(resp.config.data.file.name + ' Base file uploaded successfully.');
-                                au = au + 1;
-                                if (au == $scope.AudioFiles.length) {
-                                    if ($scope.AudioZipFiles.length > 0) {
-                                        AudioZipUpload(0);
+                                if (resp.data.success) {
+                                    $scope.Files = resp.data.Files;
+                                    toastr.success(resp.config.data.file.name + ' Base file uploaded successfully.');
+                                    au = au + 1;
+                                    if (au == $scope.AudioFiles.length) {
+                                        if ($scope.AudioZipFiles.length > 0) {
+                                            AudioZipUpload(0);
+                                        }
+                                        else {
+                                            $("#thumbfile").val("");
+                                            $("#audiofile").val("");
+                                            $scope.thumbfile = null;
+                                            $scope.audiofile = null;
+                                            $scope.uploading = false;
+                                            ngProgress.complete();
+                                        }
                                     }
                                     else {
-                                        $("#thumbfile").val("");
-                                        $("#audiofile").val("");
-                                        $scope.thumbfile = null;
-                                        $scope.audiofile = null;
-                                        $scope.uploading = false;
-                                        ngProgress.complete();
+                                        AudioUpload(au);
                                     }
                                 }
                                 else {
-                                    AudioUpload(au);
+                                    $("#thumbfile").val("");
+                                    $("#audiofile").val("");
+                                    $scope.thumbfile = null;
+                                    $scope.audiofile = null;
+                                    toastr.error(resp.data.message);
+                                    $scope.uploading = false;
+                                    ngProgress.complete();
                                 }
                             }, function (error) {
                                 toastr.error(error);
@@ -918,7 +940,7 @@ myApp.controller('content-filesCtrl', function ($scope, $state, $http, $statePar
                     }
                 }
                 else {
-                    toastr.error("Please upload thumb file or base file.");
+                    toastr.error("Please upload base audio file.");
                 }
             }
             else {
@@ -1074,7 +1096,7 @@ myApp.controller('content-filesCtrl', function ($scope, $state, $http, $statePar
                 }
             }
             else {
-                toastr.error("Please upload thumb file , app file or supporting files.");
+                toastr.error("Please upload app file or supporting files.");
             }
             $scope.GamePartVisible = true;
         }
@@ -1183,7 +1205,7 @@ myApp.controller('content-filesCtrl', function ($scope, $state, $http, $statePar
                     }
                 }
                 else {
-                    toastr.error("Please upload thumb file , common file or text files.");
+                    toastr.error("Please upload common files or text files.");
                 }
             }
             else {

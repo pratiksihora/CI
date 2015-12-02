@@ -46,18 +46,18 @@ exports.getcontentcatalog = function (req, res, next) {
                     var propquery1 = (req.body.state == "propertycontent") ? " and cm_id = " + req.body.Id : "";
                     async.parallel({
                         ContentMetadata: function (callback) {
-                            var query = 'SELECT cm_id, cm_vendor, cm_content_type, cm_title ,cm_starts_from, cm_expires_on, cm_property_id, cm_display_title, cm_celebrity, cm_genre, cm_sub_genre ,cm_mood, cm_language,  cm_religion, cm_festival_occasion, cm_raag_tal, cm_instruments,  cm_is_active, cm_thumb_url,cm_modified_on,cm_modified_by, cm_comment, cm_live_on, parentid,parentname,vd_id ,vd_end_on,vd_is_active,propertyid,propertyname,propertyexpirydate,propertyactive,genre_id,genre_name,subgenre_id,subgenre_name,mood_id,mood_name,raagtaal_id,raagtaal_name,instrument_id,instrument_name,festival_id,festival_name,religion_id,religion_name,celebrity_name,language_name,';
+                            var query = 'SELECT cm_id, cm_vendor, cm_content_type, cm_title ,cm_created_on,cm_starts_from, cm_expires_on, cm_property_id, cm_display_title, cm_celebrity, cm_genre, cm_sub_genre ,cm_mood, cm_language,  cm_religion, cm_festival_occasion, cm_raag_tal, cm_instruments,  cm_is_active, cm_thumb_url,cm_modified_on,cm_modified_by, cm_comment, cm_live_on, parentid,parentname,vd_id ,vd_end_on,vd_is_active,propertyid,propertyname,propertyexpirydate,propertyactive,genre_id,genre_name,subgenre_id,subgenre_name,mood_id,mood_name,raagtaal_id,raagtaal_name,instrument_id,instrument_name,festival_id,festival_name,religion_id,religion_name,celebrity_name,language_name,';
                             query += ' CASE  WHEN cm_state = 6   THEN cm_state ';
-                            query += ' WHEN cm_state = 1    THEN cm_state ';
-                            query += ' WHEN cm_state = 2    THEN cm_state ';
+                            // query += ' WHEN cm_state = 1    THEN cm_state ';
+                            // query += ' WHEN cm_state = 2    THEN cm_state ';
                             query += ' WHEN cm_state = 5    THEN cm_state ';
-                            query += ' WHEN cm_state =7   THEN cm_state ';
+                            query += ' WHEN cm_state = 7    THEN cm_state ';
                             query += ' WHEN propertyexpirydate < "' + currentdate + '" THEN 6 ';
                             query += ' WHEN propertyactive = 0   THEN 6 ';
                             query += ' WHEN vd_end_on < "' + currentdate + '"   THEN 6 ';
                             query += ' WHEN vd_is_active = 0   THEN 6 ';
                             query += ' ELSE cm_state END AS cm_state  FROM  ';
-                            query += ' (select cm_id, cm_vendor, cm_content_type, cm_title ,cm_starts_from, cm_expires_on, cm_property_id, cm_display_title, cm_celebrity, cm_genre, cm_sub_genre, cm_mood, cm_language,  cm_religion, cm_festival_occasion, cm_raag_tal, cm_instruments,  cm_is_active,  cm_comment,cm_modified_on,cm_modified_by, cm_live_on,';
+                            query += ' (select cm_id, cm_vendor, cm_content_type, cm_title ,cm_created_on,cm_starts_from, cm_expires_on, cm_property_id, cm_display_title, cm_celebrity, cm_genre, cm_sub_genre, cm_mood, cm_language,  cm_religion, cm_festival_occasion, cm_raag_tal, cm_instruments,  cm_is_active,  cm_comment,cm_modified_on,cm_modified_by, cm_live_on,';
                             query += ' CASE WHEN cm_state =5 THEN cm_state ';
                             query += ' WHEN cm_state =7 THEN cm_state ';
                             query += ' WHEN cm_expires_on < "' + currentdate + '" THEN 6 ';

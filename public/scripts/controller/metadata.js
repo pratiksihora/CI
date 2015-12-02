@@ -311,12 +311,31 @@ myApp.controller('metadataCtrl', function ($scope, $state, $http, $stateParams, 
         return DeleteArray;
     }
 
+    function DurationCheck(duration) {
+        if (duration) {
+            var pieces = duration.split(":");
+            if (pieces[0] && pieces[1]) {
+                if ((!isNaN(pieces[0])) && (!isNaN(pieces[0]))) {
+                    return "";
+                }
+                else {
+                    return "Invalid Duration format. Duration format must be MI:SS";
+                }
+            }
+            else {
+                return "Invalid Duration format. Duration format must be MI:SS";
+            }
+        }
+        else {
+            return "";
+        }
+    }
 
     $scope.submitForm = function (isValid) {
 
         if (isValid) {
 
-            var flag = Datewithouttime($scope.Startdate) <= Datewithouttime($scope.Expirydate) ? Datewithouttime($scope.PropertyStartDate) <= Datewithouttime($scope.Startdate) && Datewithouttime($scope.PropertyEndDate) >= Datewithouttime($scope.Expirydate) ? $scope.RightSettingShow ? $scope.SelectedCountryRights.length > 0 ? $scope.SelectedChannelRights.length > 0 ? "" : "Please Select Channel Distribution rights." : "Please Select Country Distribution rights." : "" : "Start & Expiry date should be within limit of Property limits." : "Expire date must be equal or greater than start date.";
+            var flag = Datewithouttime($scope.Startdate) <= Datewithouttime($scope.Expirydate) ? Datewithouttime($scope.PropertyStartDate) <= Datewithouttime($scope.Startdate) && Datewithouttime($scope.PropertyEndDate) >= Datewithouttime($scope.Expirydate) ? $scope.RightSettingShow ? $scope.SelectedCountryRights.length > 0 ? $scope.SelectedChannelRights.length > 0 ? $scope.Duration ? DurationCheck($scope.Duration) : "" : "Please Select Channel Distribution rights." : "Please Select Country Distribution rights." : "" : "Start & Expiry date should be within limit of Property limits." : "Expire date must be equal or greater than start date.";
             if (flag == "") {
                 var Rights = [];
                 if ($scope.RightSettingShow) {

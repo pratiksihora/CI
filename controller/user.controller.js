@@ -224,7 +224,7 @@ exports.addedituser = function (req, res, next) {
                                                                         } else {
                                                                             AdminLog.adminlog(connection_ikon_cms, req.body.UserName + " as " + req.body.Role + " created successfully, UserId is " + Ld_id + " and Temporary password sent to " + req.body.EmailId, "New " + req.body.Role + " Creation", req.session.UserName, true);
 
-                                                                            res.send({ success: true, message: 'User added successfully. Temprory Password sent to register email.', user: datas, UserVendors: UserVendors });
+                                                                            res.send({ success: true, message: 'User added successfully. Temporary Password sent to register email.', user: datas, UserVendors: UserVendors });
 
                                                                         }
                                                                     });
@@ -268,7 +268,7 @@ exports.addedituser = function (req, res, next) {
                                                     res.status(500).json(error.message);
                                                 } else {
                                                     AdminLog.adminlog(connection_ikon_cms, req.body.UserName + " as " + req.body.Role + " created successfully, UserId is " + Ld_id + " and Temporary password sent to " + req.body.EmailId, "New " + req.body.Role + " Creation", req.session.UserName, true);
-                                                    res.send({ success: true, message: 'User added successfully. Temprory Password sent to register email.', user: datas, UserVendors: UserVendors });
+                                                    res.send({ success: true, message: 'User added successfully. Temporary Password sent to register email.', user: datas, UserVendors: UserVendors });
                                                 }
                                             });
                                         }

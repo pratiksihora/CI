@@ -47,7 +47,7 @@ myApp.controller('content-catalogCtrl', function ($scope, $state, $http, $stateP
         }
         else if (cm_state == 6) {
             data.color = "red";
-            data.IsEdit = false;
+            data.IsEdit = true;
             data.status = "Metadata Blocked";
             data.IsBlock = true;
         }
@@ -61,16 +61,17 @@ myApp.controller('content-catalogCtrl', function ($scope, $state, $http, $stateP
             var data = getStatus(content.UserRole, meta.cm_expires_on, meta.vd_end_on, meta.propertyexpirydate, meta.cm_state, meta.vd_is_active, meta.propertyactive, meta.cm_state)
             meta.color = data.color;
             meta.MetaId = Icon.GetEncode(meta.cm_id);
-            meta.IsEdit = content.UserRole == "Content Manager" ? data.IsEdit : true;
+            meta.IsEdit = data.IsEdit;
             meta.status = data.status;
             meta.edit = GetEditContentType(meta.parentname);
             meta.UserRole = content.UserRole;
             meta.IsBlock = data.IsBlock;
+            meta.cm_created_on = setDate(meta.cm_created_on);
             meta.cm_starts_from = setDate(meta.cm_starts_from);
             meta.cm_expires_on = setDate(meta.cm_expires_on);
             meta.cm_modified_on = setDate(meta.cm_modified_on);
 
-            meta.PublishArray = [{ id: 4, Name: "Publish" }, { id: 5, Name: "Rest All"}];
+            meta.PublishArray = [{ id: 4, Name: "Publish" }, { id: 5, Name: "Rest All" }];
         });
         $scope.UserName = content.UserName;
         $scope.IsEditPermission = content.UserRole == "Moderator" ? true : false;
@@ -564,4 +565,3 @@ myApp.controller('content-catalogCtrl', function ($scope, $state, $http, $stateP
 
 });
 
- 

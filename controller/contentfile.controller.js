@@ -697,7 +697,7 @@ exports.uploadwallpaper = function (req, res, next) {
                                                     });
                                                 }
                                                 else {
-                                                    res.send({ success: true, message: 'File uploaded successfully' });
+                                                    res.send({ success: true, message: 'File uploaded successfully', Files: [] });
                                                 }
                                             }
                                         });
@@ -745,7 +745,7 @@ exports.uploadvideo = function (req, res, next) {
                             var width = val1.substring(val1.indexOf("=") + 1, val1.indexOf("\n"));
                             var val2 = val1.substring(val1.indexOf("\n") + 1);
                             var height = val2.substring(val2.indexOf("=") + 1, val2.indexOf("\n"));
-                            if (parseInt(height) == 320 && parseInt(width) == 640) {
+                            if (parseInt(height) == 360 && parseInt(width) == 640) {
                                 fs.readFile(old_path, function (err, data) {
                                     if (err) {
                                         res.status(500).json(err.message);
@@ -1122,11 +1122,23 @@ exports.uploadvideo = function (req, res, next) {
                                 });
                             }
                             else {
-                                res.send({ success: false, message: 'Video File Dimension must be 640x320' });
+                                fs.unlink(old_path, function (err) {
+                                    if (err) {
+                                        res.status(500).json(err.message);
+                                    } else {
+                                        res.send({ success: false, message: 'Video File Dimension must be 640x360' });
+                                    }
+                                });
                             }
                         }
                         else {
-                            res.send({ success: false, message: 'Error in Video FileUpload' });
+                            fs.unlink(old_path, function (err) {
+                                if (err) {
+                                    res.status(500).json(err.message);
+                                } else {
+                                    res.send({ success: false, message: 'Error in Video FileUpload' });
+                                }
+                            });
                         }
                     }
                 });
@@ -1162,64 +1174,106 @@ exports.uploadaudio = function (req, res, next) {
                         var filenamedata = (fields.cm_id + '_' + fields.other + '.' + file_ext).toLowerCase();
                         var save_path = config.site_audio_path + filenamedata;
                         var new_path = config.site_base_path + save_path;
-                        fs.readFile(old_path, function (err, data) {
-                            if (err) {
-                                res.status(500).json(err.message);
-                            } else {
-                                fs.writeFile(new_path, data, function (err) {
+                        var data = shell.exec('ffprobe -v error -show_entries stream=bit_rate  -of default=noprint_wrappers=1 ' + old_path);
+                        if (data.code == 0) {
+                            var val1 = data.output;
+                            var bitrate = val1.substring(val1.indexOf("=") + 1, val1.indexOf("\n"));
+                            console.log(bitrate)
+                            if (parseInt(bitrate) == 128000) {
+                                fs.readFile(old_path, function (err, data) {
                                     if (err) {
                                         res.status(500).json(err.message);
                                     } else {
-                                        fs.unlink(old_path, function (err) {
+                                        fs.writeFile(new_path, data, function (err) {
                                             if (err) {
                                                 res.status(500).json(err.message);
                                             } else {
-                                                mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                                                    function endloop() {
+                                                fs.unlink(old_path, function (err) {
+                                                    if (err) {
+                                                        res.status(500).json(err.message);
+                                                    } else {
+                                                        mysql.getConnection('CMS', function (err, connection_ikon_cms) {
+                                                            function endloop() {
 
-                                                        var query = connection_ikon_cms.query('select * from (SELECT * FROM content_files where cf_cm_id =?)cf inner join(select cm_id,cm_state from content_metadata)cm on(cm.cm_id =cf.cf_cm_id)', [fields.cm_id], function (err, result) {
-                                                            if (err) {
-                                                                connection_ikon_cms.release();
-                                                                res.status(500).json(err.message);
-                                                            }
-                                                            else {
-                                                                var cm_state = 1;
-                                                                if (result.length > 0) {
-                                                                    if (result[0].cm_state == 4) {
-                                                                        cm_state = 4;
-                                                                    }
-                                                                }
-                                                                if (result.length >= 1 && cm_state != 4) {
-                                                                    cm_state = 2;
-                                                                }
-                                                                var query = connection_ikon_cms.query('UPDATE content_metadata SET cm_state=? ,cm_modified_on = ? , cm_modified_by = ? WHERE cm_id=?', [cm_state, new Date(), req.session.UserName, fields.cm_id], function (err, Templates) {
+                                                                var query = connection_ikon_cms.query('select * from (SELECT * FROM content_files where cf_cm_id =?)cf inner join(select cm_id,cm_state from content_metadata)cm on(cm.cm_id =cf.cf_cm_id)', [fields.cm_id], function (err, result) {
                                                                     if (err) {
                                                                         connection_ikon_cms.release();
                                                                         res.status(500).json(err.message);
                                                                     }
                                                                     else {
-                                                                        var query = connection_ikon_cms.query('select * from (SELECT cm_id FROM content_metadata where cm_id =? )meta inner join(select * from content_files where cf_original_processed = 1)files on(files.cf_cm_id = meta.cm_id) inner join(select ct_group_id ,group_concat(ct_param) as ct_param,group_concat(ct_param_value) as ct_param_value from content_template group by ct_group_id)template on(template.ct_group_id =files.cf_template_id)', [fields.cm_id], function (err, Files) {
+                                                                        var cm_state = 1;
+                                                                        if (result.length > 0) {
+                                                                            if (result[0].cm_state == 4) {
+                                                                                cm_state = 4;
+                                                                            }
+                                                                        }
+                                                                        if (result.length >= 1 && cm_state != 4) {
+                                                                            cm_state = 2;
+                                                                        }
+                                                                        var query = connection_ikon_cms.query('UPDATE content_metadata SET cm_state=? ,cm_modified_on = ? , cm_modified_by = ? WHERE cm_id=?', [cm_state, new Date(), req.session.UserName, fields.cm_id], function (err, Templates) {
                                                                             if (err) {
                                                                                 connection_ikon_cms.release();
                                                                                 res.status(500).json(err.message);
                                                                             }
                                                                             else {
-                                                                                if (cm_state == 2) {
-                                                                                    var query = connection_ikon_cms.query('select * from content_files where cf_cm_id = ?', [fields.cm_id], function (err, files) {
-                                                                                        if (err) {
-                                                                                            connection_ikon_cms.release();
-                                                                                            res.status(500).json(err.message);
-                                                                                        }
-                                                                                        else {
-                                                                                            if (files.length > 0) {
-                                                                                                var file_length = files.length
-                                                                                                fileloop(0);
-                                                                                                function fileloop(f) {
-                                                                                                    var oldpath = config.site_base_path + files[f].cf_url;
-                                                                                                    var newpath = config.site_temp_path + files[f].cf_url.substr(files[f].cf_url.lastIndexOf('/') + 1);
-                                                                                                    shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
-                                                                                                    f = f + 1;
-                                                                                                    if (f == file_length) {
+                                                                                var query = connection_ikon_cms.query('select * from (SELECT cm_id FROM content_metadata where cm_id =? )meta inner join(select * from content_files where cf_original_processed = 1)files on(files.cf_cm_id = meta.cm_id) inner join(select ct_group_id ,group_concat(ct_param) as ct_param,group_concat(ct_param_value) as ct_param_value from content_template group by ct_group_id)template on(template.ct_group_id =files.cf_template_id)', [fields.cm_id], function (err, Files) {
+                                                                                    if (err) {
+                                                                                        connection_ikon_cms.release();
+                                                                                        res.status(500).json(err.message);
+                                                                                    }
+                                                                                    else {
+                                                                                        if (cm_state == 2) {
+                                                                                            var query = connection_ikon_cms.query('select * from content_files where cf_cm_id = ?', [fields.cm_id], function (err, files) {
+                                                                                                if (err) {
+                                                                                                    connection_ikon_cms.release();
+                                                                                                    res.status(500).json(err.message);
+                                                                                                }
+                                                                                                else {
+                                                                                                    if (files.length > 0) {
+                                                                                                        var file_length = files.length
+                                                                                                        fileloop(0);
+                                                                                                        function fileloop(f) {
+                                                                                                            var oldpath = config.site_base_path + files[f].cf_url;
+                                                                                                            var newpath = config.site_temp_path + files[f].cf_url.substr(files[f].cf_url.lastIndexOf('/') + 1);
+                                                                                                            shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+                                                                                                            f = f + 1;
+                                                                                                            if (f == file_length) {
+                                                                                                                var query = connection_ikon_cms.query('select * from content_files_thumbnail where cft_cm_id = ?', [fields.cm_id], function (err, Thumbs) {
+                                                                                                                    if (err) {
+                                                                                                                        connection_ikon_cms.release();
+                                                                                                                        res.status(500).json(err.message);
+                                                                                                                    }
+                                                                                                                    else {
+                                                                                                                        if (Thumbs.length > 0) {
+                                                                                                                            var thumb_length = Thumbs.length
+                                                                                                                            thumnloop(0);
+                                                                                                                            function thumnloop(th) {
+                                                                                                                                var oldpath = config.site_base_path + Thumbs[th].cft_thumbnail_img_browse;
+                                                                                                                                var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
+                                                                                                                                shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+                                                                                                                                th = th + 1;
+                                                                                                                                if (th == thumb_length) {
+                                                                                                                                    AdminLog.adminlog(connection_ikon_cms, 'Base File Uploaded for ' + fields.cm_title + ' and MetadataId is ' + fields.cm_id + ".", "Base File Upload", req.session.UserName, true);
+                                                                                                                                    res.send({ success: true, message: 'File uploaded successfully', Files: Files });
+                                                                                                                                }
+                                                                                                                                else {
+                                                                                                                                    thumnloop(th);
+                                                                                                                                }
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                        else {
+                                                                                                                            AdminLog.adminlog(connection_ikon_cms, 'Base File Uploaded for ' + fields.cm_title + ' and MetadataId is ' + fields.cm_id + ".", "Base File Upload", req.session.UserName, true);
+                                                                                                                            res.send({ success: true, message: 'File uploaded successfully', Files: Files });
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                });
+                                                                                                            }
+                                                                                                            else {
+                                                                                                                fileloop(f);
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+                                                                                                    else {
                                                                                                         var query = connection_ikon_cms.query('select * from content_files_thumbnail where cft_cm_id = ?', [fields.cm_id], function (err, Thumbs) {
                                                                                                             if (err) {
                                                                                                                 connection_ikon_cms.release();
@@ -1250,112 +1304,97 @@ exports.uploadaudio = function (req, res, next) {
                                                                                                             }
                                                                                                         });
                                                                                                     }
-                                                                                                    else {
-                                                                                                        fileloop(f);
-                                                                                                    }
                                                                                                 }
-                                                                                            }
-                                                                                            else {
-                                                                                                var query = connection_ikon_cms.query('select * from content_files_thumbnail where cft_cm_id = ?', [fields.cm_id], function (err, Thumbs) {
-                                                                                                    if (err) {
-                                                                                                        connection_ikon_cms.release();
-                                                                                                        res.status(500).json(err.message);
-                                                                                                    }
-                                                                                                    else {
-                                                                                                        if (Thumbs.length > 0) {
-                                                                                                            var thumb_length = Thumbs.length
-                                                                                                            thumnloop(0);
-                                                                                                            function thumnloop(th) {
-                                                                                                                var oldpath = config.site_base_path + Thumbs[th].cft_thumbnail_img_browse;
-                                                                                                                var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
-                                                                                                                shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
-                                                                                                                th = th + 1;
-                                                                                                                if (th == thumb_length) {
-                                                                                                                    AdminLog.adminlog(connection_ikon_cms, 'Base File Uploaded for ' + fields.cm_title + ' and MetadataId is ' + fields.cm_id + ".", "Base File Upload", req.session.UserName, true);
-                                                                                                                    res.send({ success: true, message: 'File uploaded successfully', Files: Files });
-                                                                                                                }
-                                                                                                                else {
-                                                                                                                    thumnloop(th);
-                                                                                                                }
-                                                                                                            }
-                                                                                                        }
-                                                                                                        else {
-                                                                                                            AdminLog.adminlog(connection_ikon_cms, 'Base File Uploaded for ' + fields.cm_title + ' and MetadataId is ' + fields.cm_id + ".", "Base File Upload", req.session.UserName, true);
-                                                                                                            res.send({ success: true, message: 'File uploaded successfully', Files: Files });
-                                                                                                        }
-                                                                                                    }
-                                                                                                });
-                                                                                            }
+                                                                                            });
                                                                                         }
-                                                                                    });
-                                                                                }
-                                                                                else {
-                                                                                    AdminLog.adminlog(connection_ikon_cms, 'Base File Uploaded for ' + fields.cm_title + ' and MetadataId is ' + fields.cm_id + ".", "Base File Upload", req.session.UserName, true);
-                                                                                    res.send({ success: true, message: 'File uploaded successfully', Files: Files });
-                                                                                }
+                                                                                        else {
+                                                                                            AdminLog.adminlog(connection_ikon_cms, 'Base File Uploaded for ' + fields.cm_title + ' and MetadataId is ' + fields.cm_id + ".", "Base File Upload", req.session.UserName, true);
+                                                                                            res.send({ success: true, message: 'File uploaded successfully', Files: Files });
+                                                                                        }
+                                                                                    }
+                                                                                });
+
                                                                             }
                                                                         });
-
                                                                     }
                                                                 });
-                                                            }
-                                                        });
 
-                                                    }
-                                                    var query = connection_ikon_cms.query('SELECT * FROM content_files WHERE cf_cm_id= ? and cf_template_id= ?', [fields.cm_id, fields.ct_group_id], function (err, filedata) {
-                                                        if (err) {
-                                                            connection_ikon_cms.release();
-                                                            res.status(500).json(err.message);
-                                                        }
-                                                        else {
-                                                            if (filedata.length > 0) {
-                                                                endloop();
                                                             }
-                                                            else {
-                                                                var query = connection_ikon_cms.query('SELECT MAX(cf_id) as id FROM content_files', function (err, result) {
-                                                                    if (err) {
-                                                                        connection_ikon_cms.release();
-                                                                        res.status(500).json(err.message);
+                                                            var query = connection_ikon_cms.query('SELECT * FROM content_files WHERE cf_cm_id= ? and cf_template_id= ?', [fields.cm_id, fields.ct_group_id], function (err, filedata) {
+                                                                if (err) {
+                                                                    connection_ikon_cms.release();
+                                                                    res.status(500).json(err.message);
+                                                                }
+                                                                else {
+                                                                    if (filedata.length > 0) {
+                                                                        endloop();
                                                                     }
                                                                     else {
-                                                                        var file = {
-                                                                            cf_id: result[0].id == null ? 1 : result[0].id + 1,
-                                                                            cf_cm_id: fields.cm_id,
-                                                                            cf_original_processed: 1,
-                                                                            cf_url_base: save_path,
-                                                                            cf_url: save_path,
-                                                                            cf_absolute_url: save_path,
-                                                                            cf_template_id: fields.ct_group_id,
-                                                                            cf_name: null,
-                                                                            cf_name_alias: null,
-                                                                            cf_created_on: new Date(),
-                                                                            cf_created_by: req.session.UserName,
-                                                                            cf_modified_on: new Date(),
-                                                                            cf_modified_by: req.session.UserName,
-                                                                            cf_crud_isactive: 1
-                                                                        };
-                                                                        var query = connection_ikon_cms.query('INSERT INTO content_files SET ?', file, function (err, result) {
+                                                                        var query = connection_ikon_cms.query('SELECT MAX(cf_id) as id FROM content_files', function (err, result) {
                                                                             if (err) {
                                                                                 connection_ikon_cms.release();
                                                                                 res.status(500).json(err.message);
                                                                             }
                                                                             else {
-                                                                                endloop();
+                                                                                var file = {
+                                                                                    cf_id: result[0].id == null ? 1 : result[0].id + 1,
+                                                                                    cf_cm_id: fields.cm_id,
+                                                                                    cf_original_processed: 1,
+                                                                                    cf_url_base: save_path,
+                                                                                    cf_url: save_path,
+                                                                                    cf_absolute_url: save_path,
+                                                                                    cf_template_id: fields.ct_group_id,
+                                                                                    cf_name: null,
+                                                                                    cf_name_alias: null,
+                                                                                    cf_created_on: new Date(),
+                                                                                    cf_created_by: req.session.UserName,
+                                                                                    cf_modified_on: new Date(),
+                                                                                    cf_modified_by: req.session.UserName,
+                                                                                    cf_crud_isactive: 1
+                                                                                };
+                                                                                var query = connection_ikon_cms.query('INSERT INTO content_files SET ?', file, function (err, result) {
+                                                                                    if (err) {
+                                                                                        connection_ikon_cms.release();
+                                                                                        res.status(500).json(err.message);
+                                                                                    }
+                                                                                    else {
+                                                                                        endloop();
+                                                                                    }
+                                                                                });
                                                                             }
                                                                         });
                                                                     }
-                                                                });
-                                                            }
-                                                        }
-                                                    });
+                                                                }
+                                                            });
 
+                                                        });
+                                                    }
                                                 });
                                             }
                                         });
                                     }
                                 });
                             }
-                        });
+                            else {
+                                fs.unlink(old_path, function (err) {
+                                    if (err) {
+                                        res.status(500).json(err.message);
+                                    } else {
+                                        res.send({ success: false, message: 'Audio Bitrate must be MP3 128 kbps.' });
+                                    }
+                                });
+                            }
+                        }
+                        else {
+                            fs.unlink(old_path, function (err) {
+                                if (err) {
+                                    res.status(500).json(err.message);
+                                } else {
+                                    res.send({ success: false, message: 'Error in Audio FileUpload' });
+                                }
+                            });
+                        }
+
                     }
                 });
             }

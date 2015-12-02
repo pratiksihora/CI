@@ -32,11 +32,11 @@ myApp.controller('submitmetaCtrl', function ($scope, $state, $http, $stateParams
     }
 
     if ($stateParams.status.indexOf("add") > -1 || $stateParams.status.indexOf("edit") > -1) {
-        $scope.success = "Metadata for Contenttype " + $stateParams.contenttype + ($stateParams.status.indexOf("add") > -1 ? " added" : " updated") + " successfully."
+        $scope.success = "Metadata for Content Type " + $stateParams.contenttype + ($stateParams.status.indexOf("add") > -1 ? " added" : " updated") + " successfully."
         $scope.successvisible = true;
     }
     else if ($stateParams.status.indexOf("error") > -1) {
-        $scope.error = "Error while" + ($stateParams.mode == "a" ? " adding" : " updating") + " Metadata for Contenttype " + $stateParams.contenttype + "."
+        $scope.error = "Error while" + ($stateParams.mode == "a" ? " adding" : " updating") + " Metadata for Content Type " + $stateParams.contenttype + "."
         $scope.errorvisible = true;
     }
 
