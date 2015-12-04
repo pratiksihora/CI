@@ -166,3 +166,11 @@ myApp.config(function ($stateProvider) {
     .run(function ($state) {
         $state.go("dashboard");
     })
+	
+myApp.directive('myEnter', function () {
+    return function (scope, element, attrs) {
+        element.bind("keydown keypress", function (event) {
+			 return false;
+        });
+    };
+});
