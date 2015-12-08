@@ -127,6 +127,7 @@ myApp.controller('masterListCtrl', function ($scope, $window, $http, $state, ngP
 
     // add edit Page Function
     $scope.resetform = function () {
+        $scope.SelectedMasterList = "";
         $scope.CelebrityRoleDisable = true;
         $scope.masterlistform.$setPristine();
     }

@@ -215,32 +215,34 @@ myApp.controller('ChangerPasswordCtrl', function ($scope, $http, ngProgress, $ti
     ngProgress.color('yellowgreen');
     ngProgress.height('3px');
 
-    $scope.SaveChangedPassword = function () {
-        if ($scope.NewPassword == $scope.ConfirmPassword) {
-            ngProgress.start();
-            var datas = {
-                "oldpassword": $scope.OldPassword,
-                "newpassword": $scope.NewPassword
-            };
-            Users.changePassword(datas, function (data) {
-                ngProgress.complete();
-                if (data.success) {
-                    $scope.OldPassword = "";
-                    $scope.NewPassword = "";
-                    $scope.ConfirmPassword = "";
-                    toastr.success(data.message);
-                }
-                else {
-                    toastr.error(data.message);
-                }
-                ngProgress.complete();
-            }, function (error) {
-                toastr.error(error);
-                ngProgress.complete();
-            });
-        }
-        else {
-            toastr.error("Confirm Password does not match.");
+    $scope.SaveChangedPassword = function (isValid) {
+        if (isValid) {
+            if ($scope.NewPassword == $scope.ConfirmPassword) {
+                ngProgress.start();
+                var datas = {
+                    "oldpassword": $scope.OldPassword,
+                    "newpassword": $scope.NewPassword
+                };
+                Users.changePassword(datas, function (data) {
+                    ngProgress.complete();
+                    if (data.success) {
+                        $scope.OldPassword = "";
+                        $scope.NewPassword = "";
+                        $scope.ConfirmPassword = "";
+                        toastr.success(data.message);
+                    }
+                    else {
+                        toastr.error(data.message);
+                    }
+                    ngProgress.complete();
+                }, function (error) {
+                    toastr.error(error);
+                    ngProgress.complete();
+                });
+            }
+            else {
+                toastr.error("Confirm Password does not match.");
+            }
         }
     };
 

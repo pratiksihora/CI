@@ -37,15 +37,19 @@
                                         <div class="form-group">
                                             <label for="Currency" class="col-sm-12">Short Description</label>
                                             <div class="col-sm-12">
-                                                <textarea cols="5" data-ng-disabled="IsEditPermission" class="form-control" data-ng-model="ShortDescription"></textarea>
+                                                <textarea cols="5" name="description" data-ng-maxlength="200" data-ng-disabled="IsEditPermission" class="form-control" data-ng-model="ShortDescription"></textarea>
+                                                <span style="color: red" data-ng-show="propertyForm.$submitted || propertyForm.description.$touched">
+                                                    <span data-ng-show="propertyForm.description.$error.maxlength">Maximum 200 characters allowed!</span>
+                                                </span>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="userid" class="col-sm-12"><span class="asterisk">*</span>Release Year</label>
                                             <div class="col-sm-12">
-                                                <input type="number" name="releaseyear" data-ng-disabled="IsEditPermission" class="ng-pristine ng-valid form-control" id="Title" placeholder="Release Year" data-ng-model="ReleaseYear" required>
+                                                <input type="number" name="releaseyear" data-ng-maxlength="4" data-ng-disabled="IsEditPermission" class="ng-pristine ng-valid form-control" id="Title" placeholder="Release Year" data-ng-model="ReleaseYear" required>
                                                 <span style="color: red" data-ng-show="propertyForm.$submitted || propertyForm.releaseyear.$touched">
                                                     <span data-ng-show="propertyForm.releaseyear.$error.required">Please enter Release Year.</span>
+                                                    <span data-ng-show="propertyForm.releaseyear.$error.maxlength">Maximum 4 characters allowed!</span>
                                                 </span>
                                             </div>
                                         </div>
@@ -54,9 +58,10 @@
                                         <div class="form-group">
                                             <label for="inputEmail3" class="col-sm-12"><span class="asterisk">*</span>Title</label>
                                             <div class="col-sm-12">
-                                                <input type="text" name="title" data-ng-disabled="IsEditPermission" class="ng-pristine ng-valid form-control" id="Text1" placeholder="Title" data-ng-model="Title" required>
+                                                <input type="text" name="title" data-ng-maxlength="200" data-ng-disabled="IsEditPermission" class="ng-pristine ng-valid form-control" id="Text1" placeholder="Title" data-ng-model="Title" required>
                                                 <span style="color: red" data-ng-show="propertyForm.$submitted || propertyForm.title.$touched">
                                                     <span data-ng-show="propertyForm.title.$error.required">Please enter Title.</span>
+                                                    <span data-ng-show="propertyForm.title.$error.maxlength">Maximum 200 characters allowed!</span>
                                                 </span>
                                             </div>
                                         </div>
@@ -148,7 +153,8 @@
                                     <div class="col-sm-offset-5 col-sm-7">
                                         <input type="submit" data-ng-hide="IsEditPermission" title="Submit" class="btn btn-primary btn-w-md" value="Submit" />
                                         <input type="reset" data-ng-hide="IsDisable" title="Reset" data-ng-click="resetform()" value="Reset" class="btn btn-default btn-w-md" />
-                                        <a href="#property-list"> <input type="button" title="Back To Propertylist" class="btn btn-primary btn-w-xs" value="Back To PropertyList" /></a>
+                                        <a href="#property-list">
+                                            <input type="button" title="Back To Propertylist" class="btn btn-primary btn-w-xs" value="Back To PropertyList" /></a>
                                     </div>
 
                                 </div>

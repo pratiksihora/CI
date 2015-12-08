@@ -65,13 +65,76 @@ myApp.controller('vendorCtrl', function ($scope, $state, $http, $stateParams, ng
             });
         }
     }
+    function CheckGroupSelection(selectedcountry) {
+        var country = [];
+        var tempcountry1 = [];
+        _.each($scope.CountryGroups, function (item) {
+            var groupcountry = _.where($scope.IconGroupCountry, { cm_name: item.cd_name });
+            var flag = false;
+            var tempcountry2 = [];
+            _.each(groupcountry, function (item1) {
+                var match = _.find(selectedcountry, function (country) { return country == item1.cd_id });
+                if (!match) {
+                    flag = true;
+                }
+                else {
+                    tempcountry2.push(match);
+                }
+            });
+            if (!flag) {
+                country.push(item.cd_id);
+                _.each(tempcountry2, function (item1) {
+                    tempcountry1.push(item1);
+                });
+            }
+        });
+        _.each(selectedcountry, function (item) {
+            var match = _.find($scope.IconOnlyCountry, function (country) { return country.cd_id == item });
+            if (match) {
+                if (!_.contains(tempcountry1, item)) {
+                    country.push(item);
+                }
+            }
+        });
+        country = _.unique(country);
+        return country;
+    }
+
+    function GetSelectedCountry(selectedcountry) {
+        var country = [];
+        var group = [];
+        _.each(selectedcountry, function (item) {
+            var match = _.find($scope.IconOnlyCountry, function (country) { return country.cd_id == item });
+            if (match) {
+                country.push(item);
+            }
+            else {
+                group.push(item);
+            }
+        });
+        _.each(group, function (item) {
+            var match = _.find($scope.CountryGroups, function (country) { return country.cd_id == item });
+            if (match) {
+                var groupcountry = _.where($scope.IconGroupCountry, { cm_name: match.cd_name });
+                _.each(groupcountry, function (item) {
+                    country.push(item.cd_id);
+                });
+            }
+        });
+        country = _.unique(country);
+        return country;
+    }
+
     Vendors.GetVendors({ Id: $stateParams.id, state: $scope.CurrentPage }, function (vendordata) {
         vendordata.UserRole === "Content Manager" ? location.href = "/" : "";
         vendordata.UserRole === "Super Admin" && $scope.CurrentPage == "addvendor" ? location.href = "/" : "";
 
         $scope.IsEdit = vendordata.UserRole === "Super Admin" ? true : false;
         $scope.vendorlist = GetVendorData(vendordata.VendorList);
-        $scope.CountryDistributionRights = vendordata.CountryRights;
+        $scope.CountryGroups = _.where(vendordata.IconCountry, { group_status: "group" });
+        $scope.IconOnlyCountry = _.where(vendordata.IconCountry, { group_status: null })
+        $scope.CountryDistributionRights = vendordata.IconCountry;
+        $scope.IconGroupCountry = vendordata.IconGroupCountry;
         $scope.ChannelDistributionRights = _.where(vendordata.MasterRights, { cm_name: "Channel Distribution" });
         $scope.AllowedContentType = _.where(vendordata.MasterRights, { cm_name: "Content Type" })
         var vendorcontent = _.find(vendordata.MasterRights, function (vdr) { return vdr.cm_name == "Vendor" });
@@ -82,7 +145,9 @@ myApp.controller('vendorCtrl', function ($scope, $state, $http, $stateParams, ng
             //vendordata.VendorList.length > 0 ? "" : location.href = "/";
             $scope.OldRightsData = (vendordata.SelectedRightsData);
             $scope.SelectedAllowedContentType = _.unique(_.pluck(vendordata.SelectedRightsData, "r_allowed_content_type"));
-            $scope.SelectedCountryDistributionRights = _.unique(_.pluck(vendordata.SelectedRightsData, "r_country_distribution_rights"));
+            var selectedcountry = _.unique(_.pluck(vendordata.SelectedRightsData, "r_country_distribution_rights"));
+            var country = CheckGroupSelection(selectedcountry);
+            $scope.SelectedCountryDistributionRights = country;
             $scope.SelectedChannelDistributionRights = _.unique(_.pluck(vendordata.SelectedRightsData, "r_channel_distribution_rights"));
             vendordata.VendorList.forEach(function (value) {
                 if (value.vd_id == $stateParams.id) {
@@ -126,7 +191,7 @@ myApp.controller('vendorCtrl', function ($scope, $state, $http, $stateParams, ng
         _.each(OldData, function (old) {
             var data = _.find(SelectedData, function (selected, key) { return selected.AllowedContentType == old.r_allowed_content_type && old.r_channel_distribution_rights == selected.ChannelDistributionRights && old.r_country_distribution_rights == selected.CountryDistributionRights });
             if (!data) {
-                DeleteArray.push({ r_id: old.cmd_id, cmd_id: old.cmd_id });
+                DeleteArray.push({ r_id: old.r_id, cmd_id: old.cmd_id });
             }
         });
         return DeleteArray;
@@ -173,8 +238,9 @@ myApp.controller('vendorCtrl', function ($scope, $state, $http, $stateParams, ng
             if (parseInt($scope.PersonMobileNo).toString().length == 10) {
                 if (Datewithouttime($scope.StartDate) <= Datewithouttime($scope.ExpiryDate)) {
                     var NewRightsData = [];
+                    var selectedcountry = GetSelectedCountry($scope.SelectedCountryDistributionRights);
                     _.each($scope.SelectedAllowedContentType, function (content) {
-                        _.each($scope.SelectedCountryDistributionRights, function (country) {
+                        _.each(selectedcountry, function (country) {
                             _.each($scope.SelectedChannelDistributionRights, function (channel) {
                                 NewRightsData.push({ AllowedContentType: content, CountryDistributionRights: country, ChannelDistributionRights: channel });
                             });
@@ -224,4 +290,3 @@ myApp.controller('vendorCtrl', function ($scope, $state, $http, $stateParams, ng
     };
 });
 
- 

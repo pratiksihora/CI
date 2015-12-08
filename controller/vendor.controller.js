@@ -19,7 +19,7 @@ exports.getvendor = function (req, res, next) {
                     async.parallel({
                         VendorList: function (callback) {
                             if (req.body.state == "vendor") {
-                                var query = connection_ikon_cms.query('select vd_id,vd_name,vd_display_name,vd_created_on,vd_starts_on,vd_end_on,vd_is_active,vd_desc as title,vd_desc as buttoncolor,vd_desc as status from (select * from icn_vendor_detail) vd ' + vendorquery, function (err, VendorList) {
+                                var query = connection_ikon_cms.query('select vd_id,vd_name,vd_display_name,vd_created_on,vd_starts_on,vd_end_on,vd_is_active,vd_desc as title,vd_desc as buttoncolor,vd_desc as status from (select * from icn_vendor_detail ) vd ' + vendorquery + ' order by vd_name', function (err, VendorList) {
                                     callback(err, VendorList);
                                 });
                             }
@@ -46,6 +46,16 @@ exports.getvendor = function (req, res, next) {
                         MasterRights: function (callback) {
                             var query = connection_ikon_cms.query('select * from (SELECT * FROM catalogue_detail)cd inner join(select * from catalogue_master where cm_name in("Content Type","Channel Distribution","Vendor") )cm on(cm.cm_id = cd.cd_cm_id)', function (err, MasterRights) {
                                 callback(err, MasterRights);
+                            });
+                        },
+                        IconCountry: function (callback) {
+                            var query = connection_ikon_cms.query('select cd_name,case when groupname is null  then  cd_id ELSE icn_country_id  END AS cd_id ,case when groupname is null  then  null ELSE "group"  END AS group_status   from(select cm_id,cd_id as icn_country_id,cd_name,cd_cm_id from catalogue_master as a , catalogue_detail as b where a.cm_name in("icon_geo_location") and a.cm_id = b.cd_cm_id)cm left join(select cd_id,cd_name as country_name from catalogue_master as a , catalogue_detail as b where a.cm_name in("global_country_list") and a.cm_id = b.cd_cm_id)cd on(cm.cd_name = cd.country_name)left join(select cm_name as groupname from catalogue_master)cm_group on(cm_group.groupname=  cm.cd_name)', function (err, IconCountry) {
+                                callback(err, IconCountry);
+                            });
+                        },
+                        IconGroupCountry: function (callback) {
+                            var query = connection_ikon_cms.query('select cm_id,cm_name,cd_id,cd_name from (select cd_name as group_name from catalogue_master as a , catalogue_detail as b where a.cm_name in("country_group") and a.cm_id = b.cd_cm_id )cm inner join(select cm_id,cm_name,cd_id  as icn_country_id,cd_name from catalogue_master as a,catalogue_detail as b where a.cm_id = b.cd_cm_id)cd on(cm.group_name = cd.cm_name) inner join(select cd_id,cd_name as country_name from catalogue_master as a , catalogue_detail as b where a.cm_name in("global_country_list") and a.cm_id = b.cd_cm_id)globalcountry on(cd.cd_name = globalcountry.country_name)', function (err, IconGroupCountry) {
+                                callback(err, IconGroupCountry);
                             });
                         },
                         CountryRights: function (callback) {

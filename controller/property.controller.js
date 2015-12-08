@@ -22,7 +22,7 @@ exports.getproperty = function (req, res, next) {
                         async.parallel({
                             VendorList: function (callback) {
                                 if (req.body.state == "addproperty" || req.body.state == "editproperty") {
-                                    var query = connection_ikon_cms.query('select vd_id,vd_name,vd_created_on,vd_starts_on,vd_end_on,vd_is_active,vp_r_group_id,vp_rights_at_property_level from (select * from icn_vendor_detail) vd inner join (select * from vendor_profile)vp on(vd.vd_id = vp.vp_vendor_id) ' + vendorquery, function (err, VendorList) {
+                                    var query = connection_ikon_cms.query('select vd_id,vd_name,vd_created_on,vd_starts_on,vd_end_on,vd_is_active,vp_r_group_id,vp_rights_at_property_level from (select * from icn_vendor_detail) vd inner join (select * from vendor_profile)vp on(vd.vd_id = vp.vp_vendor_id) ' + vendorquery + ' order by vd_name', function (err, VendorList) {
                                         callback(err, VendorList);
                                     });
                                 }
@@ -37,7 +37,7 @@ exports.getproperty = function (req, res, next) {
                                     });
                                 }
                                 else if (req.body.state == "vendorproperty") {
-                                    var query = connection_ikon_cms.query('select * from (select * from content_metadata where cm_property_id is null and cm_vendor = ?) cm inner join (select * from icn_vendor_detail where vd_id =? )vd on (cm.cm_vendor=vd.vd_id) ' + vendorquery + ' order by cm_title', [req.body.Id,req.body.Id], function (err, PropertyList) {
+                                    var query = connection_ikon_cms.query('select * from (select * from content_metadata where cm_property_id is null and cm_vendor = ?) cm inner join (select * from icn_vendor_detail where vd_id =? )vd on (cm.cm_vendor=vd.vd_id) ' + vendorquery + ' order by cm_title', [req.body.Id, req.body.Id], function (err, PropertyList) {
                                         callback(err, PropertyList);
                                     });
                                 }
@@ -96,6 +96,16 @@ exports.getproperty = function (req, res, next) {
                             MasterRights: function (callback) {
                                 var query = connection_ikon_cms.query('select * from (SELECT * FROM catalogue_detail)cd inner join(select * from catalogue_master where cm_name in("Content Type","Channel Distribution","Property") )cm on(cm.cm_id = cd.cd_cm_id)', function (err, MasterRights) {
                                     callback(err, MasterRights);
+                                });
+                            },
+                            IconCountry: function (callback) {
+                                var query = connection_ikon_cms.query('select cd_name,case when groupname is null  then  cd_id ELSE icn_country_id  END AS cd_id ,case when groupname is null  then  null ELSE "group"  END AS group_status   from(select cm_id,cd_id as icn_country_id,cd_name,cd_cm_id from catalogue_master as a , catalogue_detail as b where a.cm_name in("icon_geo_location") and a.cm_id = b.cd_cm_id)cm left join(select cd_id,cd_name as country_name from catalogue_master as a , catalogue_detail as b where a.cm_name in("global_country_list") and a.cm_id = b.cd_cm_id)cd on(cm.cd_name = cd.country_name)left join(select cm_name as groupname from catalogue_master)cm_group on(cm_group.groupname=  cm.cd_name)', function (err, IconCountry) {
+                                    callback(err, IconCountry);
+                                });
+                            },
+                            IconGroupCountry: function (callback) {
+                                var query = connection_ikon_cms.query('select cm_id,cm_name,cd_id,cd_name from (select cd_name as group_name from catalogue_master as a , catalogue_detail as b where a.cm_name in("country_group") and a.cm_id = b.cd_cm_id )cm inner join(select cm_id,cm_name,cd_id  as icn_country_id,cd_name from catalogue_master as a,catalogue_detail as b where a.cm_id = b.cd_cm_id)cd on(cm.group_name = cd.cm_name) inner join(select cd_id,cd_name as country_name from catalogue_master as a , catalogue_detail as b where a.cm_name in("global_country_list") and a.cm_id = b.cd_cm_id)globalcountry on(cd.cd_name = globalcountry.country_name)', function (err, IconGroupCountry) {
+                                    callback(err, IconGroupCountry);
                                 });
                             },
                             CountryRights: function (callback) {

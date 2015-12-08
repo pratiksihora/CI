@@ -198,6 +198,16 @@ exports.getmetadata = function (req, res, next) {
                                 callback(null, []);
                             }
                         },
+                        IconCountry: function (callback) {
+                            var query = connection_ikon_cms.query('select cd_name,case when groupname is null  then  cd_id ELSE icn_country_id  END AS cd_id ,case when groupname is null  then  null ELSE "group"  END AS group_status   from(select cm_id,cd_id as icn_country_id,cd_name,cd_cm_id from catalogue_master as a , catalogue_detail as b where a.cm_name in("icon_geo_location") and a.cm_id = b.cd_cm_id)cm left join(select cd_id,cd_name as country_name from catalogue_master as a , catalogue_detail as b where a.cm_name in("global_country_list") and a.cm_id = b.cd_cm_id)cd on(cm.cd_name = cd.country_name)left join(select cm_name as groupname from catalogue_master)cm_group on(cm_group.groupname=  cm.cd_name)', function (err, IconCountry) {
+                                callback(err, IconCountry);
+                            });
+                        },
+                        IconGroupCountry: function (callback) {
+                            var query = connection_ikon_cms.query('select cm_id,cm_name,cd_id,cd_name from (select cd_name as group_name from catalogue_master as a , catalogue_detail as b where a.cm_name in("country_group") and a.cm_id = b.cd_cm_id )cm inner join(select cm_id,cm_name,cd_id  as icn_country_id,cd_name from catalogue_master as a,catalogue_detail as b where a.cm_id = b.cd_cm_id)cd on(cm.group_name = cd.cm_name) inner join(select cd_id,cd_name as country_name from catalogue_master as a , catalogue_detail as b where a.cm_name in("global_country_list") and a.cm_id = b.cd_cm_id)globalcountry on(cd.cd_name = globalcountry.country_name)', function (err, IconGroupCountry) {
+                                callback(err, IconGroupCountry);
+                            });
+                        },
                         CountryRights: function (callback) {
                             var query = connection_ikon_cms.query('select distinct cd_id,cd_name from (select CASE  WHEN groupid is null THEN icn_cnt_name ELSE country_name  END AS country_name, CASE  WHEN groupid is null THEN icn_cnt ELSE countryid  END AS country_id,groupid from (SELECT cd_id as icn_cnt,cd_name as icn_cnt_name ,cd_cm_id as icn_cd_cm_id FROM catalogue_detail)cd inner join(select cm_id as icn_cm_id,cm_name as icn_cm_name from catalogue_master where cm_name in("icon_geo_location") )cm on(cm.icn_cm_id = cd.icn_cd_cm_id) left outer join (select cm_id as groupid,cm_name as groupname from catalogue_master )master on(master.groupname = cd.icn_cnt_name) left outer join (select cd_id as countryid,cd_name as country_name,cd_cm_id as m_groupid from catalogue_detail)mastercnt on(master.groupid =mastercnt.m_groupid))country inner join (select cd_id ,cd_name ,cd_cm_id,cm_id,cm_name  from catalogue_detail,catalogue_master where cm_id =cd_cm_id and cm_name in("global_country_list"))g_cd on(g_cd.cd_name =country.country_name)', function (err, CountryRights) {
                                 callback(err, CountryRights);
@@ -214,7 +224,7 @@ exports.getmetadata = function (req, res, next) {
                             });
                         },
                         Vendors: function (callback) {
-                            var query = connection_ikon_cms.query('select distinct vd_id,vd_name,vd_is_active,vd_starts_on,vd_end_on from ( select * from (select * from icn_vendor_detail)vd ' + vendorquery + ' inner join (select * from vendor_profile)vp  on (vp.vp_vendor_id=vd.vd_id)inner join (select * from multiselect_metadata_detail )mmd on (vp.vp_r_group_id=mmd.cmd_group_id) inner join (select * from rights ) r on (mmd.cmd_entity_detail = r.r_group_id )inner join  (SELECT * FROM catalogue_detail where cd_name in(' + contenttype + '))cd on (r.r_allowed_content_type =cd.cd_id)inner join(select * from catalogue_master where cm_name in("Content Type") )cm on(cm.cm_id = cd.cd_cm_id) ) cm', function (err, Vendors) {
+                            var query = connection_ikon_cms.query('select distinct vd_id,vd_name,vd_is_active,vd_starts_on,vd_end_on from ( select * from (select * from icn_vendor_detail order by vd_name)vd ' + vendorquery + ' inner join (select * from vendor_profile)vp  on (vp.vp_vendor_id=vd.vd_id)inner join (select * from multiselect_metadata_detail )mmd on (vp.vp_r_group_id=mmd.cmd_group_id) inner join (select * from rights ) r on (mmd.cmd_entity_detail = r.r_group_id )inner join  (SELECT * FROM catalogue_detail where cd_name in(' + contenttype + '))cd on (r.r_allowed_content_type =cd.cd_id)inner join(select * from catalogue_master where cm_name in("Content Type") )cm on(cm.cm_id = cd.cd_cm_id) ) cm', function (err, Vendors) {
                                 callback(err, Vendors);
                             });
                         },
@@ -229,7 +239,7 @@ exports.getmetadata = function (req, res, next) {
                             });
                         },
                         Propertys: function (callback) {
-                            var query = connection_ikon_cms.query('select distinct cm_id,cm_title,cm_vendor,cm_starts_from,cm_expires_on,cm_is_active from ( select * from (select * from content_metadata where cm_property_id is null)meta inner join(select * from icn_vendor_detail)vd on(meta.cm_vendor =vd.vd_id) ' + vendorquery + ' inner join (select * from multiselect_metadata_detail )mmd on (meta.cm_r_group_id=mmd.cmd_group_id) inner join (select * from rights ) r on (mmd.cmd_entity_detail = r.r_group_id )inner join  (SELECT * FROM catalogue_detail where cd_name in(' + contenttype + '))cd on (r.r_allowed_content_type =cd.cd_id)inner join(select cm_id as masterid from catalogue_master where cm_name in("Content Type") )cm on(cm.masterid = cd.cd_cm_id) ) cm ', function (err, Propertys) {
+                            var query = connection_ikon_cms.query('select distinct cm_id,cm_title,cm_vendor,cm_starts_from,cm_expires_on,cm_is_active from ( select * from (select * from content_metadata where cm_property_id is null order by cm_title)meta inner join(select * from icn_vendor_detail)vd on(meta.cm_vendor =vd.vd_id) ' + vendorquery + ' inner join (select * from multiselect_metadata_detail )mmd on (meta.cm_r_group_id=mmd.cmd_group_id) inner join (select * from rights ) r on (mmd.cmd_entity_detail = r.r_group_id )inner join  (SELECT * FROM catalogue_detail where cd_name in(' + contenttype + '))cd on (r.r_allowed_content_type =cd.cd_id)inner join(select cm_id as masterid from catalogue_master where cm_name in("Content Type") )cm on(cm.masterid = cd.cd_cm_id) ) cm ', function (err, Propertys) {
                                 callback(err, Propertys);
                             });
                         },

@@ -5,13 +5,42 @@ var nodemailer = require('nodemailer');
 var _ = require('underscore');
 var async = require("async");
 
-function getDate() {
-    var d = new Date();
-    var dt = d.getDate();
-    var month = d.getMonth() + 1;
-    var year = d.getFullYear();
-    var selectdate = year + '-' + Pad("0", month, 2) + '-' + Pad("0", dt, 2);
-    return selectdate;
+function getloginDate(val) {
+    if (val) {
+        var d = new Date(val);
+        var dt = d.getDate();
+        var month = d.getMonth() + 1;
+        var year = d.getFullYear();
+        var selectdate = Pad("0", dt, 2) + '/' + Pad("0", month, 2) + '/' + year.toString().substring(2);
+        return selectdate;
+    }
+    else {
+        var d = new Date();
+        var dt = d.getDate();
+        var month = d.getMonth() + 1;
+        var year = d.getFullYear();
+        var selectdate = year + '-' + Pad("0", month, 2) + '-' + Pad("0", dt, 2);
+        return selectdate;
+    }
+}
+
+function getDate(val) {
+    if (val) {
+        var d = new Date(val);
+        var dt = d.getDate();
+        var month = d.getMonth() + 1;
+        var year = d.getFullYear();
+        var selectdate = year + '-' + Pad("0", month, 2) + '-' + Pad("0", dt, 2);
+        return selectdate;
+    }
+    else {
+        var d = new Date();
+        var dt = d.getDate();
+        var month = d.getMonth() + 1;
+        var year = d.getFullYear();
+        var selectdate = year + '-' + Pad("0", month, 2) + '-' + Pad("0", dt, 2);
+        return selectdate;
+    }
 }
 function getTime(val) {
     var d = new Date(val);
@@ -36,7 +65,7 @@ exports.pages = function (req, res, next) {
             var role = req.session.UserRole;
             if (role == "Super Admin" || role == "Content Manager" || role == "Moderator") {
                 var pageData = getPages(role);
-                res.render('index', { title: 'Express', username: req.session.FullName, Pages: pageData, userrole: req.session.UserRole, lastlogin: " " + getDate(req.session.lastlogin) + " " + getTime(req.session.lastlogin) });
+                res.render('index', { title: 'Express', username: req.session.FullName, Pages: pageData, userrole: req.session.UserRole, lastlogin: " " + (req.session.lastlogin ? getloginDate(req.session.lastlogin) : "") + " " + (req.session.lastlogin ? getTime(req.session.lastlogin) : "") });
             }
             else {
                 res.render('account-login', { error: "You can't access content Ingestion." });
@@ -373,12 +402,12 @@ exports.getdashboarddata = function (req, res) {
                             });
                         },
                         Vendors: function (callback) {
-                            var query = connection_ikon_cms.query('select * from (select * from icn_vendor_detail) vd ' + vendorquery, function (err, Vendors) {
+                            var query = connection_ikon_cms.query('select * from (select * from icn_vendor_detail order by vd_name) vd ' + vendorquery, function (err, Vendors) {
                                 callback(err, Vendors);
                             });
                         },
                         VendorFiles: function (callback) {
-						    var query = connection_ikon_cms.query('SELECT parentid,cm_vendor,cm_content_type, CASE WHEN cm_state = 6   THEN cm_state   WHEN cm_state = 5    THEN cm_state    WHEN cm_state =7   THEN cm_state WHEN propertyexpirydate < "' + currentdate + '"  THEN 6 WHEN propertyactive = 0   THEN 6  WHEN vd_end_on < "' + currentdate + '"   THEN 6 WHEN vd_is_active = 0   THEN 6  ELSE cm_state END AS cm_state  FROM  (select cm_vendor,cm_content_type,cm_property_id, CASE WHEN cm_state =5 THEN cm_state WHEN cm_state =7 THEN cm_state WHEN cm_expires_on < "' + currentdate + '" THEN 6 ELSE cm_state END AS cm_state from content_metadata WHERE cm_property_id is not null )cm inner join(SELECT cm_id as propertyid ,cm_expires_on as propertyexpirydate ,cm_is_active as propertyactive FROM content_metadata)prop on(cm.cm_property_id =prop.propertyid) inner join(SELECT vd_id ,vd_end_on  ,vd_is_active  FROM icn_vendor_detail)vd on(cm.cm_vendor =vd.vd_id) inner join (SELECT * FROM icn_manage_content_type)cnt on (cnt.mct_cnt_type_id = cm.cm_content_type) inner join (select cd_id as parentid,cd_name as parentname from catalogue_detail )parent on(parent.parentid  = cnt.mct_parent_cnt_type_id)' + vendorquery, function (err, VendorFiles) {
+                            var query = connection_ikon_cms.query('SELECT parentid,cm_vendor,cm_content_type, CASE WHEN cm_state = 6   THEN cm_state   WHEN cm_state = 5    THEN cm_state    WHEN cm_state =7   THEN cm_state WHEN propertyexpirydate < "' + currentdate + '"  THEN 6 WHEN propertyactive = 0   THEN 6  WHEN vd_end_on < "' + currentdate + '"   THEN 6 WHEN vd_is_active = 0   THEN 6  ELSE cm_state END AS cm_state  FROM  (select cm_vendor,cm_content_type,cm_property_id, CASE WHEN cm_state =5 THEN cm_state WHEN cm_state =7 THEN cm_state WHEN cm_expires_on < "' + currentdate + '" THEN 6 ELSE cm_state END AS cm_state from content_metadata WHERE cm_property_id is not null )cm inner join(SELECT cm_id as propertyid ,cm_expires_on as propertyexpirydate ,cm_is_active as propertyactive FROM content_metadata)prop on(cm.cm_property_id =prop.propertyid) inner join(SELECT vd_id ,vd_end_on  ,vd_is_active  FROM icn_vendor_detail)vd on(cm.cm_vendor =vd.vd_id) inner join (SELECT * FROM icn_manage_content_type)cnt on (cnt.mct_cnt_type_id = cm.cm_content_type) inner join (select cd_id as parentid,cd_name as parentname from catalogue_detail )parent on(parent.parentid  = cnt.mct_parent_cnt_type_id)' + vendorquery, function (err, VendorFiles) {
                                 callback(err, VendorFiles);
                             });
                         },

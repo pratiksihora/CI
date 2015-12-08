@@ -91,7 +91,7 @@ exports.getcontentcatalog = function (req, res, next) {
                             });
                         },
                         Vendors: function (callback) {
-                            var query = connection_ikon_cms.query('select * from (select * from icn_vendor_detail) vd ' + vendorquery + propquery, function (err, Vendors) {
+                            var query = connection_ikon_cms.query('select * from (select * from icn_vendor_detail order by vd_name) vd ' + vendorquery + propquery, function (err, Vendors) {
                                 callback(err, Vendors);
                             });
                         },

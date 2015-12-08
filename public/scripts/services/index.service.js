@@ -21,7 +21,6 @@ myApp.service('Icon', ['$http', function ($http) {
     service.GetDecode = function (data) {
         var hashids = new Hashids("content ingestion", 8);
         var numbers = hashids.decode(data);
-        console.log(numbers);
         return numbers[0];
     }
     return service;

@@ -18,7 +18,7 @@ exports.getuserdata = function (req, res, next) {
                             });
                         },
                         VendorList: function (callback) {
-                            var query = connection_ikon_cms.query('SELECT vd_id, vd_name, vd_display_name FROM icn_vendor_detail', function (err, VendorList) {
+                            var query = connection_ikon_cms.query('SELECT vd_id, vd_name, vd_display_name FROM icn_vendor_detail order by vd_name', function (err, VendorList) {
                                 callback(err, VendorList);
                             });
                         },
@@ -69,7 +69,7 @@ exports.addedituser = function (req, res, next) {
                     var flag = true;
                     var query = connection_ikon_cms.query('SELECT * FROM icn_login_detail where LOWER(ld_user_id) = ?', [req.body.UserName.toString().toLowerCase()], function (err, result) {
                         if (err) {
-                            connection_ikon_cms.release(); ;
+                            connection_ikon_cms.release();;
                             res.status(500).json(err.message);
                         }
                         else {
@@ -81,7 +81,7 @@ exports.addedituser = function (req, res, next) {
                             if (flag) {
                                 var query = connection_ikon_cms.query('SELECT *  FROM icn_login_detail where LOWER(ld_email_id) = ?', [req.body.EmailId.toString().toLowerCase()], function (err, result) {
                                     if (err) {
-                                        connection_ikon_cms.release(); ;
+                                        connection_ikon_cms.release();;
                                         res.status(500).json(err.message);
                                     }
                                     else {
@@ -93,7 +93,7 @@ exports.addedituser = function (req, res, next) {
                                         if (flag) {
                                             var query = connection_ikon_cms.query('SELECT *  FROM icn_login_detail where ld_mobile_no= ?', [req.body.MobileNo], function (err, result) {
                                                 if (err) {
-                                                    connection_ikon_cms.release(); ;
+                                                    connection_ikon_cms.release();;
                                                     res.status(500).json(err.message);
                                                 }
                                                 else {
@@ -116,21 +116,21 @@ exports.addedituser = function (req, res, next) {
                                                         }
                                                     }
                                                     else {
-                                                        connection_ikon_cms.release(); ;
+                                                        connection_ikon_cms.release();;
                                                         res.send({ success: false, message: 'Mobile No. must be Unique.' });
                                                     }
                                                 }
                                             });
                                         }
                                         else {
-                                            connection_ikon_cms.release(); ;
+                                            connection_ikon_cms.release();;
                                             res.send({ success: false, message: 'Email must be Unique.' });
                                         }
                                     }
                                 });
                             }
                             else {
-                                connection_ikon_cms.release(); ;
+                                connection_ikon_cms.release();;
                                 res.send({ success: false, message: 'UserName must be Unique.' });
                             }
                         }
@@ -139,7 +139,7 @@ exports.addedituser = function (req, res, next) {
                     function AddUser() {
                         var query = connection_ikon_cms.query('SELECT MAX(ld_id) AS id FROM icn_login_detail', function (err, userdata) {
                             if (err) {
-                                connection_ikon_cms.release(); ;
+                                connection_ikon_cms.release();;
                                 res.status(500).json(err.message);
                             }
                             else {
@@ -158,11 +158,12 @@ exports.addedituser = function (req, res, next) {
                                     ld_created_by: req.session.UserName,
                                     ld_modified_on: new Date(),
                                     ld_modified_by: req.session.UserName,
+                                    ld_last_login: new Date(),
                                     ld_crud_isactive: 1
                                 };
                                 var query = connection_ikon_cms.query('INSERT INTO icn_login_detail SET ?', datas, function (err, rightresult) {
                                     if (err) {
-                                        connection_ikon_cms.release(); ;
+                                        connection_ikon_cms.release();;
                                         res.status(500).json(err.message);
                                     }
                                     else {
@@ -183,7 +184,7 @@ exports.addedituser = function (req, res, next) {
                                                 }
                                                 var query = connection_ikon_cms.query('INSERT INTO icn_vendor_user SET ?', vendor, function (err, rightresult) {
                                                     if (err) {
-                                                        connection_ikon_cms.release(); ;
+                                                        connection_ikon_cms.release();;
                                                         res.status(500).json(err.message);
                                                     }
                                                     else {
@@ -192,7 +193,7 @@ exports.addedituser = function (req, res, next) {
                                                         if (cnt == vendorlength) {
                                                             var query = connection_ikon_cms.query('SELECT icn_vendor_user.vu_ld_id,icn_vendor_user.vu_vd_id,icn_vendor_detail.vd_display_name	,icn_vendor_detail.vd_name FROM icn_vendor_user,icn_vendor_detail where icn_vendor_detail.vd_id =icn_vendor_user.vu_vd_id and icn_vendor_user.vu_ld_id = ?', [Ld_id], function (err, UserVendors) {
                                                                 if (err) {
-                                                                    connection_ikon_cms.release(); ;
+                                                                    connection_ikon_cms.release();;
                                                                     res.status(500).json(err.message);
                                                                 }
                                                                 else {
@@ -264,7 +265,7 @@ exports.addedituser = function (req, res, next) {
                                             }
                                             smtpTransport.sendMail(mailOptions, function (error, response) {
                                                 if (error) {
-                                                    connection_ikon_cms.release(); ;
+                                                    connection_ikon_cms.release();;
                                                     res.status(500).json(error.message);
                                                 } else {
                                                     AdminLog.adminlog(connection_ikon_cms, req.body.UserName + " as " + req.body.Role + " created successfully, UserId is " + Ld_id + " and Temporary password sent to " + req.body.EmailId, "New " + req.body.Role + " Creation", req.session.UserName, true);
@@ -281,7 +282,7 @@ exports.addedituser = function (req, res, next) {
                     function DeletevendorFromuser() {
                         var query = connection_ikon_cms.query('DELETE FROM icn_vendor_user WHERE vu_ld_id= ' + req.body.ld_Id + ' and  vu_vd_id in (' + req.body.DeleteVendor.toString() + ')', function (err, row, fields) {
                             if (err) {
-                                connection_ikon_cms.release(); ;
+                                connection_ikon_cms.release();;
                                 res.status(500).json(err.message);
                             }
                             else {
@@ -317,11 +318,11 @@ exports.addedituser = function (req, res, next) {
                                                         vu_created_by: req.session.UserName,
                                                         vu_modified_on: new Date(),
                                                         vu_modified_by: req.session.UserName,
-                                                        vu_crud_isactive:1
+                                                        vu_crud_isactive: 1
                                                     }
                                                     var query = connection_ikon_cms.query('INSERT INTO icn_vendor_user SET ?', vendor, function (err, rightresult) {
                                                         if (err) {
-                                                            connection_ikon_cms.release(); ;
+                                                            connection_ikon_cms.release();;
                                                             res.status(500).json(err.message);
                                                         }
                                                         else {
@@ -416,4 +417,4 @@ exports.blockunblockuser = function (req, res, next) {
 
 
 
-   
+

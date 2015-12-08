@@ -62,16 +62,20 @@
                                         <div class="form-group">
                                             <label for="firstname" class="col-sm-12"><span class="asterisk">*</span>Heading / Display Title</label>
                                             <div class="col-sm-12">
-                                                <input type="text" name="title" data-ng-disabled="IsDisable" class="ng-pristine ng-valid form-control" id="Title" placeholder="Title" data-ng-model="DisplayTitle" required>
+                                                <input type="text" name="title" data-ng-maxlength="200" data-ng-disabled="IsDisable" class="ng-pristine ng-valid form-control" id="Title" placeholder="Title" data-ng-model="DisplayTitle" required>
                                                 <span style="color: red" data-ng-show="metaform.$submitted || metaform.title.$touched">
                                                     <span data-ng-show="metaform.title.$error.required">Please Select Content Title.</span>
+                                                    <span data-ng-show="metaform.title.$error.maxlength">Maximum 200 characters allowed!</span>
                                                 </span>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="Currency" class="col-sm-12">Short Description</label>
                                             <div class="col-sm-12">
-                                                <textarea cols="5" data-ng-disabled="IsDisable" class="form-control" placeholder="Description" data-ng-model="Description"></textarea>
+                                                <textarea cols="5" name="sortdesc" data-ng-maxlength="200" data-ng-disabled="IsDisable" class="form-control" placeholder="Description" data-ng-model="Description"></textarea>
+                                                <span style="color: red" data-ng-show="metaform.$submitted || metaform.title.$touched">
+                                                    <span data-ng-show="metaform.sortdesc.$error.maxlength">Maximum 200 characters allowed!</span>
+                                                </span>
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -114,10 +118,13 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label for="language" class="col-sm-12">Languages</label>
+                                            <label for="language" class="col-sm-12"><span class="asterisk">*</span>Languages</label>
                                             <div class="col-sm-12">
-                                                <select name="languages" size="2" data-ng-disabled="IsDisable" class="ng-pristine ng-valid form-control" data-ng-options="item.cd_id as item.cd_name for item in Languages" data-ng-model="SelectedLanguages" multiple>
+                                                <select name="languages" size="2" data-ng-disabled="IsDisable" class="ng-pristine ng-valid form-control" data-ng-options="item.cd_id as item.cd_name for item in Languages" data-ng-model="SelectedLanguages" multiple required>
                                                 </select>
+                                                <span style="color: red" data-ng-show="metaform.$submitted || metaform.languages.$touched">
+                                                    <span data-ng-show="metaform.languages.$error.required">Please Select Language.</span>
+                                                </span>
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -130,7 +137,7 @@
                                                 </span>
                                             </div>
                                         </div>
-                                      
+
                                         <div class="form-group">
                                             <label for="userid" class="col-sm-12"><span class="asterisk">*</span>Nudity / Parental Advisory</label>
                                             <div class="col-sm-12">
@@ -147,7 +154,10 @@
                                         <div class="form-group">
                                             <label for="firstname" class="col-sm-12">Location</label>
                                             <div class="col-sm-12">
-                                                <input type="text" data-ng-disabled="IsDisable" class="form-control" placeholder="Location" data-ng-model="Location">
+                                                <input type="text" data-ng-maxlength="200" name="location" data-ng-disabled="IsDisable" class="form-control" placeholder="Location" data-ng-model="Location">
+                                                <span style="color: red" data-ng-show="metaform.$submitted || metaform.location.$touched">
+                                                    <span data-ng-show="metaform.location.$error.maxlength">Maximum 200 characters allowed!</span>
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -220,13 +230,17 @@
                                                 <input name="keyword" type="text" data-ng-disabled="IsDisable" class="ng-pristine ng-valid form-control" placeholder="Keywords" data-ng-model="SearchKeywords" required>
                                                 <span style="color: red" data-ng-show="metaform.$submitted || metaform.keyword.$touched">
                                                     <span data-ng-show="metaform.keyword.$error.required">Please enter Keywords.</span>
+                                                    <span data-ng-show="metaform.keyword.$error.maxlength">Maximum 40 characters allowed!</span>
                                                 </span>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="firstname" class="col-sm-12">CP Content ID</label>
                                             <div class="col-sm-12">
-                                                <input type="text" data-ng-disabled="IsDisable" class="ng-pristine ng-valid form-control" placeholder="Unique Content Id" data-ng-model="ContentId">
+                                                <input type="text" data-ng-maxlength="40" name="contentid" data-ng-disabled="IsDisable" class="ng-pristine ng-valid form-control" placeholder="Unique Content Id" data-ng-model="ContentId">
+                                                <span style="color: red" data-ng-show="metaform.$submitted || metaform.contentid.$touched">
+                                                    <span data-ng-show="metaform.contentid.$error.maxlength">Maximum 40 characters allowed!</span>
+                                                </span>
                                             </div>
                                         </div>
                                         <div class="portlet" data-ng-show="RightSettingShow">

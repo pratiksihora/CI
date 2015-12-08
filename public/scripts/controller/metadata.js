@@ -63,7 +63,13 @@ myApp.controller('metadataCtrl', function ($scope, $state, $http, $stateParams, 
         $scope.UserRole = metadata.UserRole;
         $scope.VendorRights = metadata.VendorRights;
         $scope.PropertyRights = metadata.PropertyRights;
-        $scope.AllCountryDistributionRights = metadata.CountryRights;
+
+        $scope.CountryGroups = _.where(metadata.IconCountry, { group_status: "group" });
+        $scope.IconOnlyCountry = _.where(metadata.IconCountry, { group_status: null })
+        $scope.IconGroupCountry = metadata.IconGroupCountry;
+
+        $scope.AllCountryDistributionRights = metadata.IconCountry;
+
         $scope.AllAllowedContentType = _.where(metadata.MasterList, { cm_name: "Content Type" });
         $scope.AllChannelDistributionRights = _.where(metadata.MasterList, { cm_name: "Channel Distribution" });
         $scope.Vendor = metadata.Vendors;
@@ -144,8 +150,8 @@ myApp.controller('metadataCtrl', function ($scope, $state, $http, $stateParams, 
                 $scope.SelectedSupportAppPurchase = item.cm_is_app_store_purchase;
                 $scope.SelectedMode = item.cm_mode;
                 $scope.ContentId = item.cm_cp_content_id;
-                $scope.Startdate = getDate(item.cm_starts_from);
-                $scope.Expirydate = getDate(item.cm_expires_on);
+                $scope.Startdate = new Date(item.cm_starts_from);
+                $scope.Expirydate = new Date(item.cm_expires_on);
             })
             $scope.OldSingers = metadata.Singers;
             $scope.OldDirectors = metadata.Directors;
@@ -198,11 +204,9 @@ myApp.controller('metadataCtrl', function ($scope, $state, $http, $stateParams, 
     }
 
 
-    //$scope.PropertyChange = function () {
-    //    $scope.IsDisable = $scope.SelectedProperty ? false : true;
-    //    $scope.ContentTypeDisable = $scope.SelectedProperty ? false : true;
-
-    //}
+    $scope.BackToContentCatalog = function () {
+        $window.location.href = "#/content-catalog";
+    }
 
     $scope.PropertyChange = function () {
         $scope.IsDisable = $scope.SelectedProperty ? false : true;
@@ -212,15 +216,111 @@ myApp.controller('metadataCtrl', function ($scope, $state, $http, $stateParams, 
         if (Prop) {
             $scope.PropertyStartDate = Prop.cm_starts_from;
             $scope.PropertyEndDate = Prop.cm_expires_on;
-            $scope.Startdate = getDate(Prop.cm_starts_from);
-            $scope.Expirydate = getDate(Prop.cm_expires_on);
+            $scope.Startdate = new Date(Prop.cm_starts_from);
+            $scope.Expirydate = new Date(Prop.cm_expires_on);
         }
         $scope.SelectedCountryRights = [];
         $scope.SelectedChannelRights = [];
         if ($scope.OldProperty == $scope.SelectedProperty) {
-            $scope.SelectedCountryRights = _.unique(_.pluck($scope.OldMetadataRights, "r_country_distribution_rights"));
+            var country = CheckGroupSelection(_.unique(_.pluck($scope.OldMetadataRights, "r_country_distribution_rights")));
+            $scope.SelectedCountryRights = country;
+            //  $scope.SelectedCountryRights = _.unique(_.pluck($scope.OldMetadataRights, "r_country_distribution_rights"));
             $scope.SelectedChannelRights = _.unique(_.pluck($scope.OldMetadataRights, "r_channel_distribution_rights"));
         }
+    }
+    function CheckGroupSelection(selectedcountry) {
+        var country = [];
+        var tempcountry1 = [];
+        _.each($scope.CountryGroups, function (item) {
+            var groupcountry = _.where($scope.IconGroupCountry, { cm_name: item.cd_name });
+            var flag = false;
+            var tempcountry2 = [];
+            _.each(groupcountry, function (item1) {
+                var match = _.find(selectedcountry, function (country) { return country == item1.cd_id });
+                if (!match) {
+                    flag = true;
+                }
+                else {
+                    tempcountry2.push(match);
+                }
+            });
+            if (!flag) {
+                country.push(item.cd_id);
+                _.each(tempcountry2, function (item1) {
+                    tempcountry1.push(item1);
+                });
+            }
+        });
+        _.each(selectedcountry, function (item) {
+            var match = _.find($scope.IconOnlyCountry, function (country) { return country.cd_id == item });
+            if (match) {
+                if (!_.contains(tempcountry1, item)) {
+                    country.push(item);
+                }
+            }
+        });
+        country = _.unique(country);
+        return country;
+    }
+
+    function GetSelectedCountry(selectedcountry) {
+        var country = [];
+        var group = [];
+        _.each(selectedcountry, function (item) {
+            var match = _.find($scope.IconOnlyCountry, function (country) { return country.cd_id == item });
+            if (match) {
+                country.push(item);
+            }
+            else {
+                group.push(item);
+            }
+        });
+        _.each(group, function (item) {
+            var match = _.find($scope.CountryGroups, function (country) { return country.cd_id == item });
+            if (match) {
+                var groupcountry = _.where($scope.IconGroupCountry, { cm_name: match.cd_name });
+                _.each(groupcountry, function (item) {
+                    country.push(item.cd_id);
+                });
+            }
+        });
+        country = _.unique(country);
+        return country;
+    }
+
+    function GetPropertyCountry(selectedcountry) {
+        var country = [];
+        var tempcountry1 = [];
+        _.each($scope.CountryGroups, function (item) {
+            var groupcountry = _.where($scope.IconGroupCountry, { cm_name: item.cd_name });
+            var flag = false;
+            var tempcountry2 = [];
+            _.each(groupcountry, function (item1) {
+                var match = _.find(selectedcountry, function (country) { return country == item1.cd_id });
+                if (!match) {
+                    flag = true;
+                }
+                else {
+                    tempcountry2.push(match);
+                }
+            });
+            if (!flag) {
+                country.push(item);
+                _.each(tempcountry2, function (item1) {
+                    tempcountry1.push(item1);
+                });
+            }
+        });
+        _.each(selectedcountry, function (item) {
+            var match = _.find($scope.IconOnlyCountry, function (country) { return country.cd_id == item });
+            if (match) {
+                if (!_.contains(tempcountry1, item)) {
+                    country.push(match);
+                }
+            }
+        });
+        country = _.unique(country);
+        return country;
     }
 
     function PropertyRights() {
@@ -232,12 +332,13 @@ myApp.controller('metadataCtrl', function ($scope, $state, $http, $stateParams, 
                 $scope.RightSettingShow = true;
                 var Countrys = _.unique(_.pluck(PropertyRights, "r_country_distribution_rights"));
                 var Channels = _.unique(_.pluck(PropertyRights, "r_channel_distribution_rights"));
-                $scope.AllCountryDistributionRights.forEach(function (countrytype) {
-                    var right = _.find(Countrys, function (cnt) { return countrytype.cd_id == cnt; });
-                    if (right) {
-                        $scope.CountryRights.push(countrytype);
-                    }
-                });
+                //$scope.AllCountryDistributionRights.forEach(function (countrytype) {
+                //    var right = _.find(Countrys, function (cnt) { return countrytype.cd_id == cnt; });
+                //    if (right) {
+                //        $scope.CountryRights.push(countrytype);
+                //    }
+                //});
+                $scope.CountryRights = GetPropertyCountry(Countrys);
                 $scope.AllChannelDistributionRights.forEach(function (channeltype) {
                     var right = _.find(Channels, function (cnt) { return channeltype.cd_id == cnt; });
                     if (right) {
@@ -305,7 +406,7 @@ myApp.controller('metadataCtrl', function ($scope, $state, $http, $stateParams, 
         _.each(OldData, function (old) {
             var data = _.find(SelectedData, function (selected, key) { return selected.r_allowed_content_type == old.r_allowed_content_type && old.r_channel_distribution_rights == selected.r_channel_distribution_rights && old.r_country_distribution_rights == selected.r_country_distribution_rights });
             if (!data) {
-                DeleteArray.push({ r_id: old.cmd_id, cmd_id: old.cmd_id });
+                DeleteArray.push({ r_id: old.r_id, cmd_id: old.cmd_id });
             }
         });
         return DeleteArray;
@@ -339,7 +440,8 @@ myApp.controller('metadataCtrl', function ($scope, $state, $http, $stateParams, 
             if (flag == "") {
                 var Rights = [];
                 if ($scope.RightSettingShow) {
-                    _.each($scope.SelectedCountryRights, function (country) {
+                    var selectedcountry = GetSelectedCountry($scope.SelectedCountryRights);
+                    _.each(selectedcountry, function (country) {
                         _.each($scope.SelectedChannelRights, function (channel) {
                             Rights.push({ property_id: $scope.SelectedProperty, vendor_id: $scope.SelectedVendor, r_allowed_content_type: $scope.ContentType, r_country_distribution_rights: country, r_channel_distribution_rights: channel });
                         })
@@ -360,7 +462,6 @@ myApp.controller('metadataCtrl', function ($scope, $state, $http, $stateParams, 
                         lang = $scope.SelectedLanguages;
                     }
                     var deletedrights = GetDeleteRights($scope.OldMetadataRights, Rights);
-
                     try {
                         var meta = {
                             state: $scope.CurrentPage,
@@ -377,8 +478,8 @@ myApp.controller('metadataCtrl', function ($scope, $state, $http, $stateParams, 
                             cm_sub_genre: $scope.SelectedSubGenres,
                             cm_title: $scope.DisplayTitle,
                             cm_short_desc: $scope.Description,
-                            cm_starts_from: $scope.Startdate,
-                            cm_expires_on: $scope.Expirydate,
+                            cm_starts_from: getDate($scope.Startdate),
+                            cm_expires_on: getDate($scope.Expirydate),
                             cm_display_title: $scope.DisplayTitle,
                             cm_mood: $scope.SelectedMood,
                             cm_display_title: $scope.DisplayTitle,
@@ -460,7 +561,7 @@ myApp.controller('metadataCtrl', function ($scope, $state, $http, $stateParams, 
                             cm_is_active: 1,
                             cm_thumb_url: null,
                             cm_comment: null,
-                            cm_live_on: null,
+                            cm_live_on: getDate($scope.Startdate),
                             addrights: addedrights,
                             deleterights: deletedrights
                         }

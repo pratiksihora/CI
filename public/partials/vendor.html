@@ -19,47 +19,52 @@
                                         <div class="form-group">
                                             <label for="firstname" class="col-sm-12"><span class="asterisk">*</span>Title</label>
                                             <div class="col-sm-12">
-                                                <input type="text" class="ng-pristine ng-valid form-control" name="title" id="Title" placeholder="Title" data-ng-model="Title" data-ng-disabled="IsEdit" required>
+                                                <input type="text" data-ng-maxlength="50" class="ng-pristine ng-valid form-control" name="title" id="Title" placeholder="Title" data-ng-model="Title" data-ng-disabled="IsEdit" required>
                                                 <span style="color: red" data-ng-show="vendorForm.$submitted || vendorForm.title.$touched">
                                                     <span data-ng-show="vendorForm.title.$error.required">Please enter valid Title.</span>
+                                                    <span data-ng-show="vendorForm.title.$error.maxlength">Maximum 50 characters allowed!</span>
                                                 </span>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="Currency" class="col-sm-12">Short Description</label>
                                             <div class="col-sm-12">
-                                                <textarea cols="5" class="form-control" data-ng-model="ShortDescription" data-ng-disabled="IsEdit"></textarea>
+                                                <textarea name="description" cols="5" data-ng-maxlength="100" class="form-control" data-ng-model="ShortDescription" data-ng-disabled="IsEdit"></textarea>
+                                                <span style="color: red" data-ng-show="vendorForm.$submitted || vendorForm.description.$touched">
+                                                    <span data-ng-show="vendorForm.description.$error.maxlength">Maximum 100 characters allowed!</span>
+                                                </span>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="userid" class="col-sm-12"><span class="asterisk">*</span>Contact Person Name</label>
                                             <div class="col-sm-12">
-                                                <input type="text" name="contactpersonname" class="ng-pristine ng-valid form-control" id="PersonName" placeholder="Contact Person Name" data-ng-model="PersonName" data-ng-disabled="IsEdit" required>
+                                                <input type="text" data-ng-maxlength="50" name="contactpersonname" class="ng-pristine ng-valid form-control" id="PersonName" placeholder="Contact Person Name" data-ng-model="PersonName" data-ng-disabled="IsEdit" required>
                                                 <span style="color: red" data-ng-show="vendorForm.$submitted || vendorForm.contactpersonname.$touched">
                                                     <span data-ng-show="vendorForm.contactpersonname.$error.required">Please enter Person Name.</span>
+                                                    <span data-ng-show="vendorForm.contactpersonname.$error.maxlength">Maximum 50 characters allowed!</span>
                                                 </span>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="userid" class="col-sm-12"><span class="asterisk">*</span>Contact Person Email</label>
                                             <div class="col-sm-12">
-                                                <input type="email" name="contactpersonemail" data-ng-pattern="/^[_A-Za-z0-9]+(\.[_A-Za-z0-9]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*(\.[a-z]{2,4})$/" class="ng-pristine ng-valid form-control" id="PersonEmail" placeholder="Contact Person Email" data-ng-model="PersonEmail" data-ng-disabled="IsEdit" required>
+                                                <input type="email" data-ng-maxlength="50" name="contactpersonemail" data-ng-pattern="/^[_A-Za-z0-9]+(\.[_A-Za-z0-9]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*(\.[a-z]{2,4})$/" class="ng-pristine ng-valid form-control" id="PersonEmail" placeholder="Contact Person Email" data-ng-model="PersonEmail" data-ng-disabled="IsEdit" required>
                                                 <span style="color: red" data-ng-show="vendorForm.$submitted || vendorForm.contactpersonemail.$touched">
                                                     <span data-ng-show="vendorForm.contactpersonemail.$error.required">Email is required.</span>
                                                     <span data-ng-show="vendorForm.contactpersonemail.$error.pattern">Please enter valid Email.</span>
+                                                    <span data-ng-show="vendorForm.contactpersonemail.$error.maxlength">Maximum 50 characters allowed!</span>
                                                 </span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-
                                         <div class="form-group">
                                             <label for="userid" class="col-sm-12"><span class="asterisk">*</span>Contact Person Mobile no</label>
                                             <div class="col-sm-12">
-                                                <input type="text" name="contactpersonemobileno" data-ng-pattern="/^\+?\d{10}$/" data-ng-maxlength="10" data-ng-minlength="10" class="ng-pristine ng-valid form-control" id="PersonMobileNo" placeholder="Contact Person Mobile no" maxlength="10" data-ng-model="PersonMobileNo" data-ng-disabled="IsEdit" data-ng-pattern="/^\d{10}$/" required>
-                                                <span style="color: red" ng-show="vendorForm.$submitted || vendorForm.contactpersonemobileno.$touched">
-                                                    <span ng-show="vendorForm.contactpersonemobileno.$error.required">Please enter Mobile no.</span>
-                                                    <span ng-show="vendorForm.contactpersonemobileno.$error.pattern">Invalid Mobile No.</span>
+                                                <input type="text" name="contactpersonemobileno" data-ng-pattern="/^\+?\d{10}$/" data-ng-maxlength="10" data-ng-minlength="10" class="ng-pristine ng-valid form-control" id="PersonMobileNo" placeholder="Contact Person Mobile no" maxlength="10" data-ng-model="PersonMobileNo" data-ng-disabled="IsEdit" required>
+                                                <span style="color: red" data-ng-show="vendorForm.$submitted || vendorForm.contactpersonemobileno.$touched">
+                                                    <span data-ng-show="vendorForm.contactpersonemobileno.$error.required">Please enter Mobile no.</span>
+                                                    <span data-ng-show="vendorForm.contactpersonemobileno.$error.pattern">Invalid Mobile No.</span>
                                                 </span>
                                             </div>
                                         </div>
@@ -67,7 +72,7 @@
                                             <label for="inputEmail3" class="col-sm-12"><span class="asterisk">*</span>Starts from</label>
                                             <div class="col-sm-12">
                                                 <div class="input-group date">
-                                                    <input my-enter="" type="text" class="form-control" name="startfrom"  datepicker-popup="MM-dd-yyyy" data-ng-model="StartDate" placeholder="Start date" data-ng-disabled="IsEdit" data-ng-click="openDatepicker($event)" data-is-open="open1" required />
+                                                    <input my-enter="" type="text" class="form-control" name="startfrom" datepicker-popup="MM-dd-yyyy" data-ng-model="StartDate" placeholder="Start date" data-ng-disabled="IsEdit" data-ng-click="openDatepicker($event)" data-is-open="open1" required />
                                                     <span class="input-group-btn">
                                                         <button type="button" data-ng-disabled="IsEdit" class="btn btn-default" data-ng-click="openDatepicker($event)"><i class="glyphicon glyphicon-calendar"></i></button>
                                                     </span>
@@ -160,7 +165,8 @@
                                     <div class="col-sm-offset-5 col-sm-7">
                                         <button type="submit" data-ng-hide="IsEdit" title="Submit" data-ng-hide="hidebtn" class="btn btn-primary btn-w-md">Submit</button>
                                         <input type="reset" value="Reset" data-ng-hide="IsDisable" data-ng-click="resetform()" title="Reset" type="button" class="btn btn-default btn-w-md" />
-                                        <a href="#vendor-list"> <input type="button" title="Back To Vendorlist" class="btn btn-primary btn-w-xs" value="Back To VendorList" /></a>
+                                        <a href="#vendor-list">
+                                            <input type="button" title="Back To Vendorlist" class="btn btn-primary btn-w-xs" value="Back To VendorList" /></a>
                                     </div>
                                 </div>
                             </form>

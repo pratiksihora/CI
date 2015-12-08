@@ -62,7 +62,7 @@ myApp.controller('propertyCtrl', function ($scope, $window, $http, $state, ngPro
         _.each(OldData, function (old) {
             var data = _.find(SelectedData, function (selected, key) { return old.cm_vendor == selected.vendorId && selected.AllowedContentType == old.r_allowed_content_type && old.r_channel_distribution_rights == selected.ChannelDistributionRights && old.r_country_distribution_rights == selected.CountryDistributionRights });
             if (!data) {
-                DeleteArray.push({ r_id: old.cmd_id, cmd_id: old.cmd_id });
+                DeleteArray.push({ r_id: old.r_id, cmd_id: old.cmd_id });
             }
         });
         return DeleteArray;
@@ -71,6 +71,67 @@ myApp.controller('propertyCtrl', function ($scope, $window, $http, $state, ngPro
     $scope.resetform = function () {
         $scope.propertyForm.$setPristine();
     }
+
+    function CheckGroupSelection(selectedcountry) {
+        var country = [];
+        var tempcountry1 = [];
+        _.each($scope.CountryGroups, function (item) {
+            var groupcountry = _.where($scope.IconGroupCountry, { cm_name: item.cd_name });
+            var flag = false;
+            var tempcountry2 = [];
+            _.each(groupcountry, function (item1) {
+                var match = _.find(selectedcountry, function (country) { return country == item1.cd_id });
+                if (!match) {
+                    flag = true;
+                }
+                else {
+                    tempcountry2.push(match);
+                }
+            });
+            if (!flag) {
+                country.push(item.cd_id);
+                _.each(tempcountry2, function (item1) {
+                    tempcountry1.push(item1);
+                });
+            }
+        });
+        _.each(selectedcountry, function (item) {
+            var match = _.find($scope.IconOnlyCountry, function (country) { return country.cd_id == item });
+            if (match) {
+                if (!_.contains(tempcountry1, item)) {
+                    country.push(item);
+                }
+            }
+        });
+        country = _.unique(country);
+        return country;
+    }
+
+    function GetSelectedCountry(selectedcountry) {
+        var country = [];
+        var group = [];
+        _.each(selectedcountry, function (item) {
+            var match = _.find($scope.IconOnlyCountry, function (country) { return country.cd_id == item });
+            if (match) {
+                country.push(item);
+            }
+            else {
+                group.push(item);
+            }
+        });
+        _.each(group, function (item) {
+            var match = _.find($scope.CountryGroups, function (country) { return country.cd_id == item });
+            if (match) {
+                var groupcountry = _.where($scope.IconGroupCountry, { cm_name: match.cd_name });
+                _.each(groupcountry, function (item) {
+                    country.push(item.cd_id);
+                });
+            }
+        });
+        country = _.unique(country);
+        return country;
+    }
+
     $scope.ExportExcel = function () {
         if ($scope.PropertyList.length > 0) {
             var array = [];
@@ -108,7 +169,13 @@ myApp.controller('propertyCtrl', function ($scope, $window, $http, $state, ngPro
             $scope.Vendors = angular.copy(property.VendorList);
             $scope.VendorRights = angular.copy(property.VendorRights);
             $scope.OldPropertyRights = $scope.PropertyRights = property.PropertyRights;
-            $scope.AllCountryDistributionRights = property.CountryRights;
+
+            $scope.CountryGroups = _.where(property.IconCountry, { group_status: "group" });
+            $scope.IconOnlyCountry = _.where(property.IconCountry, { group_status: null })
+            $scope.IconGroupCountry = property.IconGroupCountry;
+
+            $scope.AllCountryDistributionRights = property.IconCountry;
+
             $scope.AllAllowedContentType = _.where(property.MasterRights, { cm_name: "Content Type" });
             $scope.AllChannelDistributionRights = _.where(property.MasterRights, { cm_name: "Channel Distribution" });
             var propertycontent = _.find(property.MasterRights, function (prop) { return prop.cm_name == "Property" });
@@ -121,8 +188,8 @@ myApp.controller('propertyCtrl', function ($scope, $window, $http, $state, ngPro
                 $scope.Title = prop.cm_title;
                 $scope.ShortDescription = prop.cm_short_desc;
                 $scope.ReleaseYear = prop.cm_release_year;
-                $scope.StartDate = getDate(prop.cm_starts_from);
-                $scope.ExpiryDate = getDate(prop.cm_expires_on);
+                $scope.StartDate = new Date(prop.cm_starts_from);
+                $scope.ExpiryDate = new Date(prop.cm_expires_on);
                 $scope.property_group = prop.cm_r_group_id;
             });
             $scope.VendorChange();
@@ -131,7 +198,13 @@ myApp.controller('propertyCtrl', function ($scope, $window, $http, $state, ngPro
             $scope.Checked = 1;
             $scope.Vendors = angular.copy(property.VendorList);
             $scope.VendorRights = angular.copy(property.VendorRights);
-            $scope.AllCountryDistributionRights = property.CountryRights;
+
+            $scope.CountryGroups = _.where(property.IconCountry, { group_status: "group" });
+            $scope.IconOnlyCountry = _.where(property.IconCountry, { group_status: null })
+            $scope.IconGroupCountry = property.IconGroupCountry;
+
+            $scope.AllCountryDistributionRights = property.IconCountry;
+
             $scope.AllAllowedContentType = _.where(property.MasterRights, { cm_name: "Content Type" });
             $scope.AllChannelDistributionRights = _.where(property.MasterRights, { cm_name: "Channel Distribution" });
             var propertycontent = _.find(property.MasterRights, function (prop) { return prop.cm_name == "Property" });
@@ -156,8 +229,8 @@ myApp.controller('propertyCtrl', function ($scope, $window, $http, $state, ngPro
             if (vendor) {
                 $scope.VendorStartDate = vendor.vd_starts_on;
                 $scope.VendorEndDate = vendor.vd_end_on;
-                $scope.StartDate = getDate(vendor.vd_starts_on);
-                $scope.ExpiryDate = getDate(vendor.vd_end_on);
+                $scope.StartDate = new Date(vendor.vd_starts_on);
+                $scope.ExpiryDate = new Date(vendor.vd_end_on);
                 $scope.RightsShow = vendor.vp_rights_at_property_level == 1 ? true : false;
             }
         }
@@ -171,7 +244,8 @@ myApp.controller('propertyCtrl', function ($scope, $window, $http, $state, ngPro
             if ($scope.OldVendor == $scope.SelectedVendor) {
 
                 $scope.SelectedAllowedContentType = _.unique(_.pluck($scope.OldPropertyRights, "r_allowed_content_type"));
-                $scope.SelectedCountryDistributionRights = _.unique(_.pluck($scope.OldPropertyRights, "r_country_distribution_rights"));
+                var country = CheckGroupSelection(_.unique(_.pluck($scope.OldPropertyRights, "r_country_distribution_rights")));
+                $scope.SelectedCountryDistributionRights = country;
                 $scope.SelectedChannelDistributionRights = _.unique(_.pluck($scope.OldPropertyRights, "r_channel_distribution_rights"));
                 var right = _.find($scope.OldPropertyRights, function (prop) { return prop; });
                 if (right) {
@@ -179,6 +253,41 @@ myApp.controller('propertyCtrl', function ($scope, $window, $http, $state, ngPro
                 }
             }
         }
+    }
+
+    function GetVendorCountry(selectedcountry) {
+        var country = [];
+        var tempcountry1 = [];
+        _.each($scope.CountryGroups, function (item) {
+            var groupcountry = _.where($scope.IconGroupCountry, { cm_name: item.cd_name });
+            var flag = false;
+            var tempcountry2 = [];
+            _.each(groupcountry, function (item1) {
+                var match = _.find(selectedcountry, function (country) { return country == item1.cd_id });
+                if (!match) {
+                    flag = true;
+                }
+                else {
+                    tempcountry2.push(match);
+                }
+            });
+            if (!flag) {
+                country.push(item);
+                _.each(tempcountry2, function (item1) {
+                    tempcountry1.push(item1);
+                });
+            }
+        });
+        _.each(selectedcountry, function (item) {
+            var match = _.find($scope.IconOnlyCountry, function (country) { return country.cd_id == item });
+            if (match) {
+                if (!_.contains(tempcountry1, item)) {
+                    country.push(match);
+                }
+            }
+        });
+        country = _.unique(country);
+        return country;
     }
 
     function VendorRights() {
@@ -196,12 +305,7 @@ myApp.controller('propertyCtrl', function ($scope, $window, $http, $state, ngPro
                 $scope.AllowedContentType.push(contenttype);
             }
         });
-        $scope.AllCountryDistributionRights.forEach(function (countrytype) {
-            var right = _.find(Countrys, function (cnt) { return countrytype.cd_id == cnt; });
-            if (right) {
-                $scope.CountryDistributionRights.push(countrytype);
-            }
-        });
+        $scope.CountryDistributionRights = GetVendorCountry(Countrys);
         $scope.AllChannelDistributionRights.forEach(function (channeltype) {
             var right = _.find(Channels, function (cnt) { return channeltype.cd_id == cnt; });
             if (right) {
@@ -254,19 +358,22 @@ myApp.controller('propertyCtrl', function ($scope, $window, $http, $state, ngPro
             var year = new Date().getFullYear();
             var flag = ($scope.ReleaseYear > 1949 && $scope.ReleaseYear < (year + 2)) ? Datewithouttime($scope.StartDate) <= Datewithouttime($scope.ExpiryDate) ? Datewithouttime($scope.VendorStartDate) <= Datewithouttime($scope.StartDate) && Datewithouttime($scope.VendorEndDate) >= Datewithouttime($scope.ExpiryDate) ? $scope.RightsShow == true ? $scope.SelectedAllowedContentType.length > 0 ? $scope.SelectedCountryDistributionRights.length > 0 ? $scope.SelectedChannelDistributionRights.length > 0 ? "" : "Please Select Channel Distribution rights." : "Please Select Country Distribution rights." : "Please Select Allowed Content Type." : "" : "Start & Expiry date should be within limit of Vendor limits." : "Expire date must be equal or greater than start date." : "Release Year must be between 1950 to current year + 1.";
             if (flag == "") {
+                var NewRightsData = [];
                 if (!$scope.RightsShow) {
                     $scope.SelectedAllowedContentType = [];
-                    $scope.SelectedChannelDistributionRights = [];
+                    $scope.SelectedCountryDistributionRights = [];
                     $scope.SelectedChannelDistributionRights = [];
                 }
-                var NewRightsData = [];
-                _.each($scope.SelectedAllowedContentType, function (content) {
-                    _.each($scope.SelectedCountryDistributionRights, function (country) {
-                        _.each($scope.SelectedChannelDistributionRights, function (channel) {
-                            NewRightsData.push({ vendorId: $scope.SelectedVendor, AllowedContentType: content, CountryDistributionRights: country, ChannelDistributionRights: channel });
+                else {
+                    var selectedcountry = GetSelectedCountry($scope.SelectedCountryDistributionRights);
+                    _.each($scope.SelectedAllowedContentType, function (content) {
+                        _.each(selectedcountry, function (country) {
+                            _.each($scope.SelectedChannelDistributionRights, function (channel) {
+                                NewRightsData.push({ vendorId: $scope.SelectedVendor, AllowedContentType: content, CountryDistributionRights: country, ChannelDistributionRights: channel });
+                            });
                         });
                     });
-                });
+                }
                 var AddRights = GetAddRights($scope.OldPropertyRights, NewRightsData);
                 var DeleteRights = GetDeleteRights($scope.OldPropertyRights, NewRightsData);
                 ngProgress.start();

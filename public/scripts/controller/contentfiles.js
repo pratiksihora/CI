@@ -175,7 +175,6 @@ myApp.controller('content-filesCtrl', function ($scope, $state, $http, $statePar
                                     })
                                 }
                                 else if ($scope.TypeName == "Audio") {
-                                    console.log(metadata.Metadata[0]);
                                     $scope.LyricsLanguagesMetadata = metadata.LyricsLanguages;
                                     if (metadata.Metadata[0].songtype == "Group Song") {
                                         $scope.DuetAudioVisible = false;
@@ -901,7 +900,6 @@ myApp.controller('content-filesCtrl', function ($scope, $state, $http, $statePar
                                 }
                                 else {
                                     if (resp.data.Error.length > 0) {
-                                        console.log(resp.data.Error);
                                         toastr.error(resp.data.Error.toString());
                                     }
                                     else {
