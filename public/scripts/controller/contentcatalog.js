@@ -61,6 +61,8 @@ myApp.controller('content-catalogCtrl', function ($scope, $state, $http, $stateP
             var data = getStatus(content.UserRole, meta.cm_expires_on, meta.vd_end_on, meta.propertyexpirydate, meta.cm_state, meta.vd_is_active, meta.propertyactive, meta.cm_state)
             meta.color = data.color;
             meta.MetaId = Icon.GetEncode(meta.cm_id);
+			meta.cm_thumb_url = meta.cm_thumb_url != null && meta.cm_thumb_url ?meta.cm_thumb_url.split(',')[0]:'';
+			
             meta.IsEdit = data.IsEdit;
             meta.status = data.status;
             meta.edit = GetEditContentType(meta.parentname);

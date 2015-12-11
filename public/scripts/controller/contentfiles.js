@@ -282,7 +282,7 @@ myApp.controller('content-filesCtrl', function ($scope, $state, $http, $statePar
                         $scope.thumberrormessage = "you can upload only " + (3 - $scope.ThumbDataFiles.length) + " thumb files.";
                     }
                     else {
-                        $scope.thumberrormessage = $scope.ThumbDataFiles.length + " thumb file already uploaded. you can upload only " + (3 - otherimages.length) + " thumb files.";
+                        $scope.thumberrormessage = $scope.ThumbDataFiles.length + " thumb file already uploaded. you can upload only " + (3 - $scope.ThumbDataFiles.length) + " thumb files.";
                     }
                 }
                 toastr.error($scope.thumberrormessage);
@@ -594,9 +594,10 @@ myApp.controller('content-filesCtrl', function ($scope, $state, $http, $statePar
             })
             if (!$scope.commonfileerror) {
                 var flag = true;
-                if (imagecount != 0) {
-                    var otherimages = _.where($scope.Files, { ct_param_value: 'otherimage' });
+				 var otherimages = _.where($scope.Files, { ct_param_value: 'otherimage' });
                     var othervideos = _.where($scope.Files, { ct_param_value: 'othervideo' });
+                if (imagecount != 0) {
+                   
                     if (!((5 - otherimages.length - imagecount) >= 0)) {
                         flag = false;
                         $scope.commonfileerror = true;
@@ -634,6 +635,7 @@ myApp.controller('content-filesCtrl', function ($scope, $state, $http, $statePar
                     }
                 }
                 if (flag) {
+					 
                     _.each($scope.commonfile, function (val) {
                         if (isImage(val.name)) {
                             var count = _.where($scope.CommonFiles, { type: 'image' });
@@ -1100,7 +1102,7 @@ myApp.controller('content-filesCtrl', function ($scope, $state, $http, $statePar
         }
         else if ($scope.TypeName == "Text") {
             if ($scope.TextError.length == 0) {
-                if ($scope.thumbfile || $scope.commonfile || ($scope.TextFiles.length > 0)) {
+                if ($scope.thumbfile ||  ($scope.CommonFiles.length >0)  || ($scope.TextFiles.length > 0 || $scope.commonfileerror)) {
                     if ($scope.thumberror || $scope.commonfileerror) {
                         toastr.error($scope.thumberror ? $scope.thumberrormessage : $scope.commonfileerrormessage);
                     }
@@ -1111,7 +1113,7 @@ myApp.controller('content-filesCtrl', function ($scope, $state, $http, $statePar
                                 toastr.success(resp.config.data.file.name + ' Thumb file uploaded successfully.');
                                 tu = tu + 1;
                                 if (tu == $scope.ThumbFiles.length) {
-                                    if ($scope.commonfile) {
+                                    if ($scope.CommonFiles.length >0) {
                                         TextCommonUpload(0);
                                     }
                                     else if ($scope.TextFiles.length > 0) {
@@ -1138,7 +1140,7 @@ myApp.controller('content-filesCtrl', function ($scope, $state, $http, $statePar
                             var data = $scope.CommonFiles[tcu];
                             ContentFile.Upload('/uploadotherfiles', { count: data.count, file: data.file, cm_title: $scope.cm_title, other: data.other, type: data.type, TypeName: $scope.TypeName, MetaDataId: $scope.MetadataId, cm_id: $scope.MetaId, width: data.width, height: data.height, ct_group_id: data.ct_group_id }, function (resp) {
                                 $scope.Files = resp.data.Files;
-                                toastr.success(resp.config.data.file.name + ' common text file uploaded successfully.');
+                                toastr.success(resp.config.data.file.name + ' common file uploaded successfully.');
                                 tcu = tcu + 1;
                                 if (tcu == $scope.CommonFiles.length) {
                                     if ($scope.TextFiles.length > 0) {
@@ -1194,7 +1196,7 @@ myApp.controller('content-filesCtrl', function ($scope, $state, $http, $statePar
                         if ($scope.thumbfile) {
                             textthumbupload(0);
                         }
-                        else if ($scope.commonfile) {
+                        else if ($scope.CommonFiles.length >0) {
                             TextCommonUpload(0);
                         }
                         else {

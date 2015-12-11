@@ -4,6 +4,23 @@ var AdminLog = require('../models/AdminLog');
 var nodemailer = require('nodemailer');
 var _ = require('underscore');
 var async = require("async");
+var crypto = require('crypto');
+algorithm = 'aes-256-ctr', //Algorithm used for encrytion
+password = 'd6F3Efeq'; //Encryption password
+
+function encrypt(text) {
+    var cipher = crypto.createCipher(algorithm, password)
+    var crypted = cipher.update(text, 'utf8', 'hex')
+    crypted += cipher.final('hex');
+    return crypted;
+}
+
+function decrypt(text) {
+    var decipher = crypto.createDecipher(algorithm, password)
+    var dec = decipher.update(text, 'hex', 'utf8')
+    dec += decipher.final('utf8');
+    return dec;
+}
 
 function getloginDate(val) {
     if (val) {
@@ -87,7 +104,46 @@ exports.login = function (req, res, next) {
             res.redirect("/");
         }
         else {
-            res.render('account-login', { error: '' });
+            if (req.cookies.publish_remember == 1 && req.cookies.publish_userid != '') {
+                mysql.getConnection('CMS', function (err, connection_ikon_cms) {
+                    var query = connection_ikon_cms.query('SELECT * FROM icn_login_detail where BINARY ld_id= ?  ', [decrypt(req.cookies.publish_userid)], function (err, row, fields) {
+                        if (err) {
+                            connection_ikon_cms.release();
+                            res.render('account-login', { error: 'Error in database connection.' });
+                        } else {
+                            if (row.length > 0) {
+                                if (row[0].ld_active == 1) {
+                                    if (row[0].ld_role == "Super Admin" || row[0].ld_role == "Content Manager" || row[0].ld_role == "Moderator") {
+                                        var session = req.session;
+                                        session.UserId = row[0].ld_id;
+                                        session.UserRole = row[0].ld_role;
+                                        session.UserName = row[0].ld_user_id;
+                                        session.FullName = row[0].ld_display_name;
+                                        session.Password = row[0].ld_user_pwd;
+                                        session.lastlogin = row[0].ld_last_login;
+                                        connection_ikon_cms.release();
+                                        res.redirect('/');
+                                    }
+                                    else {
+                                        connection_ikon_cms.release();
+                                        res.render('account-login', { error: "You can't access content Ingestion." });
+                                    }
+                                }
+                                else {
+                                    connection_ikon_cms.release();
+                                    res.render('account-login', { error: 'Your account has been disable.' });
+                                }
+                            } else {
+                                connection_ikon_cms.release();
+                                res.render('account-login', { error: 'Invalid Username / Password.' });
+                            }
+                        }
+                    });
+                })
+            }
+            else {
+                res.render('account-login', { error: '' });
+            }
         }
     }
     else {
@@ -101,32 +157,16 @@ exports.logout = function (req, res, next) {
         if (req.session) {
             if (req.session.UserName) {
                 mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                    var query = connection_ikon_cms.query('SELECT MAX(ald_id) AS id FROM icn_admin_log_detail', function (err, result) {
+                    var query = connection_ikon_cms.query('UPDATE icn_login_detail SET  ld_last_login = ?, ld_modified_on = ? ,ld_modified_by= ? WHERE ld_id = ?', [new Date(), new Date(), req.session.UserName, req.session.UserId], function (err, row11, fields) {
                         if (err) {
                             connection_ikon_cms.release();
-                            res.status(500).json(err.message);
-                        }
-                        else {
-                            var data = {
-                                ald_id: result[0].id != null ? (parseInt(result[0].id) + 1) : 1,
-                                ald_message: req.session.UserName + " logout successfully at " + new Date().toDateString(),
-                                ald_action: "Logout User",
-                                ald_created_on: new Date(),
-                                ald_created_by: req.session.UserName,
-                                ald_modified_on: new Date(),
-                                ald_modified_by: req.session.UserName
-                            };
-                            var query = connection_ikon_cms.query('INSERT INTO icn_admin_log_detail SET ?', data, function (err, result) {
-                                if (err) {
-                                    connection_ikon_cms.release();
-                                    res.status(500).json(err.message);
-                                }
-                                else {
-                                    connection_ikon_cms.release();
-                                    req.session = null;
-                                    res.redirect('/accountlogin');
-                                }
-                            });
+                            res.render('account-login', { error: 'Error in database connection.' });
+                        } else {
+                            AdminLog.adminlog(connection_ikon_cms, req.session.UserName + " logout successfully at " + new Date().toDateString(), "Logout User", req.body.username, true);
+                            req.session = null;
+                            res.clearCookie('publish_remember');
+                            res.clearCookie('publish_userid');
+                            res.redirect('/accountlogin');
                         }
                     });
                 });
@@ -157,27 +197,39 @@ exports.authenticate = function (req, res, next) {
                     if (row.length > 0) {
                         if (row[0].ld_active == 1) {
                             if (row[0].ld_role == "Super Admin" || row[0].ld_role == "Content Manager" || row[0].ld_role == "Moderator") {
-                                AdminLog.adminlog(connection_ikon_cms, req.body.username + " successfully login at " + new Date().toDateString(), "Acccount Login", req.body.username, true);
-                                if (req.body.password == "wakau") {
-                                    var session = req.session;
-                                    session.UserId = row[0].ld_id;
-                                    session.UserRole = row[0].ld_role;
-                                    session.UserName = req.body.username;
-                                    session.FullName = row[0].ld_display_name;
-                                    session.Password = req.body.password;
-                                    session.lastlogin = row[0].ld_last_login;
-                                    res.redirect('/#change-password');
-                                }
-                                else {
-                                    var session = req.session;
-                                    session.UserId = row[0].ld_id;
-                                    session.UserRole = row[0].ld_role;
-                                    session.UserName = req.body.username;
-                                    session.FullName = row[0].ld_display_name;
-                                    session.Password = req.body.password;
-                                    session.lastlogin = row[0].ld_last_login;
-                                    res.redirect('/');
-                                }
+                                var query = connection_ikon_cms.query('UPDATE icn_login_detail SET  ld_last_login = ?, ld_modified_on = ? ,ld_modified_by= ? WHERE ld_id = ?', [new Date(), new Date(), req.body.username, row[0].ld_id], function (err, row11, fields) {
+                                    if (err) {
+                                        connection_ikon_cms.release();
+                                        res.render('account-login', { error: 'Error in database connection.' });
+                                    } else {
+                                        if (req.body.rememberMe) {
+                                            var minute = 10080 * 60 * 1000;
+                                            res.cookie('publish_remember', 1, { maxAge: minute });
+                                            res.cookie('publish_userid', encrypt(row[0].ld_id.toString()), { maxAge: minute });
+                                        }
+                                        AdminLog.adminlog(connection_ikon_cms, req.body.username + " successfully login at " + new Date().toDateString(), "Acccount Login", req.body.username, true);
+                                        if (req.body.password == "wakau") {
+                                            var session = req.session;
+                                            session.UserId = row[0].ld_id;
+                                            session.UserRole = row[0].ld_role;
+                                            session.UserName = req.body.username;
+                                            session.FullName = row[0].ld_display_name;
+                                            session.Password = req.body.password;
+                                            session.lastlogin = row[0].ld_last_login;
+                                            res.redirect('/#change-password');
+                                        }
+                                        else {
+                                            var session = req.session;
+                                            session.UserId = row[0].ld_id;
+                                            session.UserRole = row[0].ld_role;
+                                            session.UserName = req.body.username;
+                                            session.FullName = row[0].ld_display_name;
+                                            session.Password = req.body.password;
+                                            session.lastlogin = row[0].ld_last_login;
+                                            res.redirect('/');
+                                        }
+                                    }
+                                });
                             }
                             else {
                                 connection_ikon_cms.release();
@@ -288,8 +340,27 @@ function getPages(role) {
 
 //Forgot Password Page Get
 exports.viewForgotPassword = function (req, res, next) {
-    req.session = null;
-    res.render('account-forgot', { error: '', msg: '' });
+    if (req.session) {
+        if (req.session.UserName) {
+            res.redirect('/accountlogin');
+        }
+        else {
+            if (req.cookies.publish_remember == 1 && req.cookies.publish_userid != '') {
+                res.redirect('/accountlogin');
+            }
+            else {
+                res.render('account-forgot', { error: '', msg: '' });
+            }
+        }
+    }
+    else {
+        if (req.cookies.publish_remember == 1 && req.cookies.publish_userid != '') {
+            res.redirect('/accountlogin');
+        }
+        else {
+            res.render('account-forgot', { error: '', msg: '' });
+        }
+    }
 }
 
 //Forgot Password Post

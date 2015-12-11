@@ -66,7 +66,7 @@ exports.getcontentcatalog = function (req, res, next) {
                             query += ' inner join(SELECT cm_id as propertyid,cm_title as propertyname ,cm_expires_on as propertyexpirydate ,cm_is_active as propertyactive FROM content_metadata where cm_property_id is null ' + propquery1 + ')prop on(cm.cm_property_id =prop.propertyid) ';
                             query += ' inner join(SELECT vd_id ,vd_end_on  ,vd_is_active  FROM icn_vendor_detail)vd on(cm.cm_vendor =vd.vd_id) ' + vendorquery;
                             query += ' inner join (SELECT * FROM icn_manage_content_type)cnt on (cnt.mct_cnt_type_id = cm.cm_content_type) inner join (select cd_id as parentid,cd_name as parentname from catalogue_detail )parent on(parent.parentid  = cnt.mct_parent_cnt_type_id)';
-                            query += ' left outer join (select cft_thumbnail_img_browse as cm_thumb_url,cft_cm_id,cft_thumbnail_size from content_files_thumbnail where cft_thumbnail_size ="125*125")cth on(cth.cft_cm_id =cm.cm_id)'
+                            query += ' left outer join (select group_concat( cft_thumbnail_img_browse) as cm_thumb_url,cft_cm_id from content_files_thumbnail group by cft_cm_id )cth on(cth.cft_cm_id =cm.cm_id)'
                             query += ' left outer join (select cd_id as genre_id,cd_name as genre_name from catalogue_detail)genres on (genres.genre_id = cm.cm_genre)';
                             query += ' left outer join (select cd_id as subgenre_id,cd_name as subgenre_name from catalogue_detail)subgenres on (subgenres.subgenre_id = cm.cm_sub_genre)';
                             query += ' left outer join (select cd_id as mood_id,cd_name as mood_name from catalogue_detail)mood on (mood.mood_id = cm.cm_mood)';
