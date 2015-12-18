@@ -1600,8 +1600,9 @@ exports.bulkupload = function (req, res, next) {
                                                                                                 var save_path = config.site_thumb_path + filenamedata;
                                                                                                 var base_path = config.site_base_path + config.site_thumb_path + filenamedata;
                                                                                                 var new_path = 'public/Vendors/' + Vendors[a].vd_name + '/Files/' + obj.Thumbnail_url_100_100;
-                                                                                                shell.exec('ffmpeg -y  -i "' + new_path + '" -c copy "' + base_path + '"');
-                                                                                                var thumb = {
+                                                                                               // shell.exec('ffmpeg -y  -i "' + new_path + '" -c copy "' + base_path + '"');
+                                                                                               shell.exec('cp "' + new_path + '" "' + base_path + '"');
+																							   var thumb = {
                                                                                                     cft_cm_id: obj.cm_id,
                                                                                                     cft_thumbnail_size: 100 + "*" + 100,
                                                                                                     cft_thumbnail_img_browse: save_path,
@@ -1627,7 +1628,8 @@ exports.bulkupload = function (req, res, next) {
                                                                                                 var save_path = config.site_thumb_path + filenamedata;
                                                                                                 var base_path = config.site_base_path + config.site_thumb_path + filenamedata;
                                                                                                 var new_path = 'public/Vendors/' + Vendors[a].vd_name + '/Files/' + obj.Thumbnail_url_125_125;
-                                                                                                shell.exec('ffmpeg -y  -i "' + new_path + '" -c copy "' + base_path + '"');
+                                                                                               // shell.exec('ffmpeg -y  -i "' + new_path + '" -c copy "' + base_path + '"');
+																								   shell.exec('cp "' + new_path + '" "' + base_path + '"');
                                                                                                 var thumb = {
                                                                                                     cft_cm_id: obj.cm_id,
                                                                                                     cft_thumbnail_size: 125 + "*" + 125,
@@ -1654,7 +1656,8 @@ exports.bulkupload = function (req, res, next) {
                                                                                                 var save_path = config.site_thumb_path + filenamedata;
                                                                                                 var base_path = config.site_base_path + config.site_thumb_path + filenamedata;
                                                                                                 var new_path = 'public/Vendors/' + Vendors[a].vd_name + '/Files/' + obj.Thumbnail_url_150_150;
-                                                                                                shell.exec('ffmpeg -y  -i "' + new_path + '" -c copy "' + base_path + '"');
+                                                                                                //shell.exec('ffmpeg -y  -i "' + new_path + '" -c copy "' + base_path + '"');
+																								   shell.exec('cp "' + new_path + '" "' + base_path + '"');
                                                                                                 var thumb = {
                                                                                                     cft_cm_id: obj.cm_id,
                                                                                                     cft_thumbnail_size: 150 + "*" + 150,
@@ -1688,7 +1691,9 @@ exports.bulkupload = function (req, res, next) {
                                                                                                 var save_path = config.site_wallpaper_path + filenamedata;
                                                                                                 var base_path = config.site_base_path + config.site_wallpaper_path + filenamedata;
                                                                                                 var new_path = 'public/Vendors/' + Vendors[a].vd_name + '/Files/' + obj.base_1280_1280_url;
-                                                                                                shell.exec('ffmpeg -y  -i "' + new_path + '" -c copy "' + base_path + '"');
+                                                                                               //
+																							  // shell.exec('ffmpeg -y  -i "' + new_path + '" -c copy "' + base_path + '"');
+																								   shell.exec('cp "' + new_path + '" "' + base_path + '"');
                                                                                                 ThumbFiles = [];
                                                                                                 var Formats = config.Base1;
                                                                                                 var length = Formats.length;
@@ -1747,7 +1752,9 @@ exports.bulkupload = function (req, res, next) {
                                                                                                                                                             function fileloop(f) {
                                                                                                                                                                 var oldpath = config.site_base_path + files[f].cf_url;
                                                                                                                                                                 var newpath = config.site_temp_path + files[f].cf_url.substr(files[f].cf_url.lastIndexOf('/') + 1);
-                                                                                                                                                                shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+                                                                                                                                                                //shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+																																								 shell.exec('cp "' + oldpath + '" "' + newpath + '"');
+																																								   
                                                                                                                                                                 f = f + 1;
                                                                                                                                                                 if (f == file_length) {
                                                                                                                                                                     var query = connection_ikon_cms.query('select * from content_files_thumbnail where cft_cm_id = ?', [obj.cm_id], function (err, Thumbs) {
@@ -1762,7 +1769,8 @@ exports.bulkupload = function (req, res, next) {
                                                                                                                                                                                 function thumnloop(th) {
                                                                                                                                                                                     var oldpath = config.site_base_path + Thumbs[th].cft_thumbnail_img_browse;
                                                                                                                                                                                     var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
-                                                                                                                                                                                    shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+                                                                                                                                                                                   // shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+																																													   shell.exec('cp "' + oldpath + '" "' + newpath + '"');
                                                                                                                                                                                     th = th + 1;
                                                                                                                                                                                     if (th == thumb_length) {
                                                                                                                                                                                         callback(err, Templates);
@@ -1796,7 +1804,8 @@ exports.bulkupload = function (req, res, next) {
                                                                                                                                                                         function thumnloop(th) {
                                                                                                                                                                             var oldpath = config.site_base_path + Thumbs[th].cft_thumbnail_img_browse;
                                                                                                                                                                             var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
-                                                                                                                                                                            shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+                                                                                                                                                                            //shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+																																											   shell.exec('cp "' + oldpath + '" "' + newpath + '"');
                                                                                                                                                                             th = th + 1;
                                                                                                                                                                             if (th == thumb_length) {
                                                                                                                                                                                 callback(err, Templates);
@@ -1847,7 +1856,8 @@ exports.bulkupload = function (req, res, next) {
                                                                                                                                             function fileloop(f) {
                                                                                                                                                 var oldpath = config.site_base_path + files[f].cf_url;
                                                                                                                                                 var newpath = config.site_temp_path + files[f].cf_url.substr(files[f].cf_url.lastIndexOf('/') + 1);
-                                                                                                                                                shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+                                                                                                                                                //shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+																																				shell.exec('cp "' + oldpath + '" "' + newpath + '"');
                                                                                                                                                 f = f + 1;
                                                                                                                                                 if (f == file_length) {
                                                                                                                                                     var query = connection_ikon_cms.query('select * from content_files_thumbnail where cft_cm_id = ?', [obj.cm_id], function (err, Thumbs) {
@@ -1862,7 +1872,8 @@ exports.bulkupload = function (req, res, next) {
                                                                                                                                                                 function thumnloop(th) {
                                                                                                                                                                     var oldpath = config.site_base_path + Thumbs[th].cft_thumbnail_img_browse;
                                                                                                                                                                     var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
-                                                                                                                                                                    shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+                                                                                                                                                                    //shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+																																									shell.exec('cp "' + oldpath + '" "' + newpath + '"');
                                                                                                                                                                     th = th + 1;
                                                                                                                                                                     if (th == thumb_length) {
                                                                                                                                                                         callback(err, Templates);
@@ -1896,7 +1907,8 @@ exports.bulkupload = function (req, res, next) {
                                                                                                                                                         function thumnloop(th) {
                                                                                                                                                             var oldpath = config.site_base_path + Thumbs[th].cft_thumbnail_img_browse;
                                                                                                                                                             var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
-                                                                                                                                                            shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+                                                                                                                                                          //  shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+																																							shell.exec('cp "' + oldpath + '" "' + newpath + '"');
                                                                                                                                                             th = th + 1;
                                                                                                                                                             if (th == thumb_length) {
                                                                                                                                                                 callback(err, Templates);
@@ -2003,7 +2015,8 @@ exports.bulkupload = function (req, res, next) {
                                                                                                 var save_path = config.site_wallpaper_path + filenamedata;
                                                                                                 var base_path = config.site_base_path + config.site_wallpaper_path + filenamedata;
                                                                                                 var new_path = 'public/Vendors/' + Vendors[a].vd_name + '/Files/' + obj.base_1280_720_url;
-                                                                                                shell.exec('ffmpeg -y  -i "' + new_path + '" -c copy "' + base_path + '"');
+                                                                                                //shell.exec('ffmpeg -y  -i "' + new_path + '" -c copy "' + base_path + '"');
+																								shell.exec('cp "' + new_path + '" "' + base_path + '"');
                                                                                                 ThumbFiles = [];
                                                                                                 var length = Formats.length;
                                                                                                 function endloop(index, length) {
@@ -2041,7 +2054,8 @@ exports.bulkupload = function (req, res, next) {
                                                                                                                                         function fileloop(f) {
                                                                                                                                             var oldpath = config.site_base_path + files[f].cf_url;
                                                                                                                                             var newpath = config.site_temp_path + files[f].cf_url.substr(files[f].cf_url.lastIndexOf('/') + 1);
-                                                                                                                                            shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+                                                                                                                                            //shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+																																			shell.exec('cp "' + oldpath + '" "' + newpath + '"');
                                                                                                                                             f = f + 1;
                                                                                                                                             if (f == file_length) {
                                                                                                                                                 var query = connection_ikon_cms.query('select * from content_files_thumbnail where cft_cm_id = ?', [obj.cm_id], function (err, Thumbs) {
@@ -2056,7 +2070,8 @@ exports.bulkupload = function (req, res, next) {
                                                                                                                                                             function thumnloop(th) {
                                                                                                                                                                 var oldpath = config.site_base_path + Thumbs[th].cft_thumbnail_img_browse;
                                                                                                                                                                 var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
-                                                                                                                                                                shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+                                                                                                                                                                //shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+																																								shell.exec('cp "' + oldpath + '" "' + newpath + '"');
                                                                                                                                                                 th = th + 1;
                                                                                                                                                                 if (th == thumb_length) {
                                                                                                                                                                     callback(err, Templates);
@@ -2090,7 +2105,8 @@ exports.bulkupload = function (req, res, next) {
                                                                                                                                                     function thumnloop(th) {
                                                                                                                                                         var oldpath = config.site_base_path + Thumbs[th].cft_thumbnail_img_browse;
                                                                                                                                                         var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
-                                                                                                                                                        shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+                                                                                                                                                       // shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+																																						shell.exec('cp "' + oldpath + '" "' + newpath + '"');
                                                                                                                                                         th = th + 1;
                                                                                                                                                         if (th == thumb_length) {
                                                                                                                                                             callback(err, Templates);
@@ -2180,7 +2196,8 @@ exports.bulkupload = function (req, res, next) {
                                                                                                 var save_path = config.site_wallpaper_path + filenamedata;
                                                                                                 var base_path = config.site_base_path + config.site_wallpaper_path + filenamedata;
                                                                                                 var new_path = 'public/Vendors/' + Vendors[a].vd_name + '/Files/' + obj.base_720_1280_url;
-                                                                                                shell.exec('ffmpeg -y  -i "' + new_path + '" -c copy "' + base_path + '"');
+                                                                                                //shell.exec('ffmpeg -y  -i "' + new_path + '" -c copy "' + base_path + '"');
+																								shell.exec('cp "' + new_path + '" "' + base_path + '"');
                                                                                                 ThumbFiles = [];
                                                                                                 var length = Formats.length;
                                                                                                 function endloop(index, length) {
@@ -2218,7 +2235,8 @@ exports.bulkupload = function (req, res, next) {
                                                                                                                                         function fileloop(f) {
                                                                                                                                             var oldpath = config.site_base_path + files[f].cf_url;
                                                                                                                                             var newpath = config.site_temp_path + files[f].cf_url.substr(files[f].cf_url.lastIndexOf('/') + 1);
-                                                                                                                                            shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+                                                                                                                                           // shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+																																			shell.exec('cp "' + oldpath + '" "' + newpath + '"');
                                                                                                                                             f = f + 1;
                                                                                                                                             if (f == file_length) {
                                                                                                                                                 var query = connection_ikon_cms.query('select * from content_files_thumbnail where cft_cm_id = ?', [obj.cm_id], function (err, Thumbs) {
@@ -2233,7 +2251,8 @@ exports.bulkupload = function (req, res, next) {
                                                                                                                                                             function thumnloop(th) {
                                                                                                                                                                 var oldpath = config.site_base_path + Thumbs[th].cft_thumbnail_img_browse;
                                                                                                                                                                 var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
-                                                                                                                                                                shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+                                                                                                                                                               // shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+																																									shell.exec('cp "' + oldpath + '" "' + newpath + '"');
                                                                                                                                                                 th = th + 1;
                                                                                                                                                                 if (th == thumb_length) {
                                                                                                                                                                     callback(err, Templates);
@@ -2267,7 +2286,8 @@ exports.bulkupload = function (req, res, next) {
                                                                                                                                                     function thumnloop(th) {
                                                                                                                                                         var oldpath = config.site_base_path + Thumbs[th].cft_thumbnail_img_browse;
                                                                                                                                                         var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
-                                                                                                                                                        shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+                                                                                                                                                       // shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+																																						shell.exec('cp "' + oldpath + '" "' + newpath + '"');
                                                                                                                                                         th = th + 1;
                                                                                                                                                         if (th == thumb_length) {
                                                                                                                                                             callback(err, Templates);
@@ -2357,7 +2377,9 @@ exports.bulkupload = function (req, res, next) {
                                                                                                     var save_path = config.site_video_path + filenamedata;
                                                                                                     var base_path = config.site_base_path + config.site_video_path + filenamedata;
                                                                                                     var new_path = 'public/Vendors/' + Vendors[a].vd_name + '/Files/' + obj.Video_url;
-                                                                                                    shell.exec('ffmpeg -y  -i "' + new_path + '" -c copy "' + base_path + '"');
+                                                                                                   // shell.exec('ffmpeg -y  -i "' + new_path + '" -c copy "' + base_path + '"');
+																									shell.exec('cp "' + new_path + '" "' + base_path + '"');
+																									
                                                                                                     var ThumbFiles = [];
                                                                                                     function endloop() {
                                                                                                         var query = connection_ikon_cms.query('select * from (SELECT * FROM `content_files` where cf_cm_id =?)cf inner join(select cm_id,cm_state from content_metadata)cm on(cm.cm_id =cf.cf_cm_id)', [obj.cm_id], function (err, result) {
@@ -2412,7 +2434,8 @@ exports.bulkupload = function (req, res, next) {
                                                                                                                                                             function fileloop(f) {
                                                                                                                                                                 var oldpath = config.site_base_path + files[f].cf_url;
                                                                                                                                                                 var newpath = config.site_temp_path + files[f].cf_url.substr(files[f].cf_url.lastIndexOf('/') + 1);
-                                                                                                                                                                shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+                                                                                                                                                               // shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+																																								shell.exec('cp "' + oldpath + '" "' + newpath + '"');
                                                                                                                                                                 f = f + 1;
                                                                                                                                                                 if (f == file_length) {
                                                                                                                                                                     var query = connection_ikon_cms.query('select * from content_files_thumbnail where cft_cm_id = ?', [obj.cm_id], function (err, Thumbs) {
@@ -2427,8 +2450,9 @@ exports.bulkupload = function (req, res, next) {
                                                                                                                                                                                 function thumnloop(th) {
                                                                                                                                                                                     var oldpath = config.site_base_path + Thumbs[th].cft_thumbnail_img_browse;
                                                                                                                                                                                     var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
-                                                                                                                                                                                    shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
-                                                                                                                                                                                    th = th + 1;
+                                                                                                                                                                                    //shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+                                                                                                                                                                                  shell.exec('cp "' + oldpath + '" "' + newpath + '"');
+																																												  th = th + 1;
                                                                                                                                                                                     if (th == thumb_length) {
                                                                                                                                                                                         callback(err, Templates);
                                                                                                                                                                                     }
@@ -2461,7 +2485,8 @@ exports.bulkupload = function (req, res, next) {
                                                                                                                                                                         function thumnloop(th) {
                                                                                                                                                                             var oldpath = config.site_base_path + Thumbs[th].cft_thumbnail_img_browse;
                                                                                                                                                                             var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
-                                                                                                                                                                            shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+                                                                                                                                                                           // shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+																																											shell.exec('cp "' + oldpath + '" "' + newpath + '"');
                                                                                                                                                                             th = th + 1;
                                                                                                                                                                             if (th == thumb_length) {
                                                                                                                                                                                 callback(err, Templates);
@@ -2511,7 +2536,8 @@ exports.bulkupload = function (req, res, next) {
                                                                                                                                             function fileloop(f) {
                                                                                                                                                 var oldpath = config.site_base_path + files[f].cf_url;
                                                                                                                                                 var newpath = config.site_temp_path + files[f].cf_url.substr(files[f].cf_url.lastIndexOf('/') + 1);
-                                                                                                                                                shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+                                                                                                                                                //shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+																																				shell.exec('cp "' + oldpath + '" "' + newpath + '"');
                                                                                                                                                 f = f + 1;
                                                                                                                                                 if (f == file_length) {
                                                                                                                                                     var query = connection_ikon_cms.query('select * from content_files_thumbnail where cft_cm_id = ?', [obj.cm_id], function (err, Thumbs) {
@@ -2526,7 +2552,8 @@ exports.bulkupload = function (req, res, next) {
                                                                                                                                                                 function thumnloop(th) {
                                                                                                                                                                     var oldpath = config.site_base_path + Thumbs[th].cft_thumbnail_img_browse;
                                                                                                                                                                     var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
-                                                                                                                                                                    shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+                                                                                                                                                                   // shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+																																									shell.exec('cp "' + oldpath + '" "' + newpath + '"');
                                                                                                                                                                     th = th + 1;
                                                                                                                                                                     if (th == thumb_length) {
                                                                                                                                                                         callback(err, Templates);
@@ -2560,7 +2587,8 @@ exports.bulkupload = function (req, res, next) {
                                                                                                                                                         function thumnloop(th) {
                                                                                                                                                             var oldpath = config.site_base_path + Thumbs[th].cft_thumbnail_img_browse;
                                                                                                                                                             var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
-                                                                                                                                                            shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+                                                                                                                                                            //shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+																																							shell.exec('cp "' + oldpath + '" "' + newpath + '"');
                                                                                                                                                             th = th + 1;
                                                                                                                                                             if (th == thumb_length) {
                                                                                                                                                                 callback(err, Templates);
@@ -2657,7 +2685,9 @@ exports.bulkupload = function (req, res, next) {
                                                                                                     var save_path = config.site_audio_path + filenamedata;
                                                                                                     var base_path = config.site_base_path + config.site_audio_path + filenamedata;
                                                                                                     var new_path = 'public/Vendors/' + Vendors[a].vd_name + '/Files/' + obj.Audio_url;
-                                                                                                    shell.exec('ffmpeg -y  -i "' + new_path + '" -c copy "' + base_path + '"');
+                                                                                                   // shell.exec('ffmpeg -y  -i "' + new_path + '" -c copy "' + base_path + '"');
+																									shell.exec('cp "' + new_path + '" "' + base_path + '"');
+																								
                                                                                                     function endloop() {
                                                                                                         var query = connection_ikon_cms.query('select * from (SELECT * FROM `content_files` where cf_cm_id =?)cf inner join(select cm_id,cm_state from content_metadata)cm on(cm.cm_id =cf.cf_cm_id)', [obj.cm_id], function (err, result) {
                                                                                                             if (err) {
@@ -2690,7 +2720,8 @@ exports.bulkupload = function (req, res, next) {
                                                                                                                                         function fileloop(f) {
                                                                                                                                             var oldpath = config.site_base_path + files[f].cf_url;
                                                                                                                                             var newpath = config.site_temp_path + files[f].cf_url.substr(files[f].cf_url.lastIndexOf('/') + 1);
-                                                                                                                                            shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+                                                                                                                                           // shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+																																				shell.exec('cp "' + oldpath + '" "' + newpath + '"');
                                                                                                                                             f = f + 1;
                                                                                                                                             if (f == file_length) {
                                                                                                                                                 var query = connection_ikon_cms.query('select * from content_files_thumbnail where cft_cm_id = ?', [obj.cm_id], function (err, Thumbs) {
@@ -2705,7 +2736,8 @@ exports.bulkupload = function (req, res, next) {
                                                                                                                                                             function thumnloop(th) {
                                                                                                                                                                 var oldpath = config.site_base_path + Thumbs[th].cft_thumbnail_img_browse;
                                                                                                                                                                 var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
-                                                                                                                                                                shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+                                                                                                                                                             //   shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+																																									shell.exec('cp "' + oldpath + '" "' + newpath + '"');
                                                                                                                                                                 th = th + 1;
                                                                                                                                                                 if (th == thumb_length) {
                                                                                                                                                                     callback(err, OtherTemplates);
@@ -2739,7 +2771,8 @@ exports.bulkupload = function (req, res, next) {
                                                                                                                                                     function thumnloop(th) {
                                                                                                                                                         var oldpath = config.site_base_path + Thumbs[th].cft_thumbnail_img_browse;
                                                                                                                                                         var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
-                                                                                                                                                        shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+                                                                                                                                                        //shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
+																																							shell.exec('cp "' + oldpath + '" "' + newpath + '"');
                                                                                                                                                         th = th + 1;
                                                                                                                                                         if (th == thumb_length) {
                                                                                                                                                             callback(err, OtherTemplates);

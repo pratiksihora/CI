@@ -149,7 +149,7 @@ exports.addeditproperty = function (req, res, next) {
         if (req.session) {
             if (req.session.UserName) {
                 mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                    var query = connection_ikon_cms.query('SELECT * FROM content_metadata Where cm_title =? and  cm_property_id is NULL', [req.body.Title], function (err, result) {
+                    var query = connection_ikon_cms.query('SELECT * FROM content_metadata Where cm_title =? and  cm_vendor = ? and  cm_property_id is NULL', [req.body.Title,  req.body.Vendor], function (err, result) {
                         if (err) {
                             connection_ikon_cms.release();
                             res.status(500).json(err.message);
