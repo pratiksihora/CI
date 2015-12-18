@@ -208,24 +208,17 @@ exports.authenticate = function (req, res, next) {
                                             res.cookie('publish_userid', encrypt(row[0].ld_id.toString()), { maxAge: minute });
                                         }
                                         AdminLog.adminlog(connection_ikon_cms, req.body.username + " successfully login at " + new Date().toDateString(), "Acccount Login", req.body.username, true);
+                                        var session = req.session;
+                                        session.UserId = row[0].ld_id;
+                                        session.UserRole = row[0].ld_role;
+                                        session.UserName = req.body.username;
+                                        session.FullName = row[0].ld_display_name;
+                                        session.Password = req.body.password;
+                                        session.lastlogin = row[0].ld_last_login;
                                         if (req.body.password == "wakau") {
-                                            var session = req.session;
-                                            session.UserId = row[0].ld_id;
-                                            session.UserRole = row[0].ld_role;
-                                            session.UserName = req.body.username;
-                                            session.FullName = row[0].ld_display_name;
-                                            session.Password = req.body.password;
-                                            session.lastlogin = row[0].ld_last_login;
                                             res.redirect('/#change-password');
                                         }
                                         else {
-                                            var session = req.session;
-                                            session.UserId = row[0].ld_id;
-                                            session.UserRole = row[0].ld_role;
-                                            session.UserName = req.body.username;
-                                            session.FullName = row[0].ld_display_name;
-                                            session.Password = req.body.password;
-                                            session.lastlogin = row[0].ld_last_login;
                                             res.redirect('/');
                                         }
                                     }
