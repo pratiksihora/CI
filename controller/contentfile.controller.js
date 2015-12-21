@@ -409,6 +409,7 @@ exports.uploadwallpaper = function (req, res, next) {
                                                                                                                                                 var newpath = config.site_temp_path + files[f].cf_url.substr(files[f].cf_url.lastIndexOf('/') + 1);
                                                                                                                                                 //  shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
                                                                                                                                                 shell.exec('cp "' + oldpath + '" "' + newpath + '"');
+                                                                                                                                                shell.exec('chmod 777 ' + newpath);
                                                                                                                                                 f = f + 1;
                                                                                                                                                 if (f == file_length) {
                                                                                                                                                     var query = connection_ikon_cms.query('select * from content_files_thumbnail where cft_cm_id = ?', [fields.cm_id], function (err, Thumbs) {
@@ -425,6 +426,7 @@ exports.uploadwallpaper = function (req, res, next) {
                                                                                                                                                                     var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
                                                                                                                                                                     //shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
                                                                                                                                                                     shell.exec('cp "' + oldpath + '" "' + newpath + '"');
+                                                                                                                                                                    shell.exec('chmod 777 ' + newpath);
                                                                                                                                                                     th = th + 1;
                                                                                                                                                                     if (th == thumb_length) {
                                                                                                                                                                         AdminLog.adminlog(connection_ikon_cms, 'Base File Uploaded for ' + fields.cm_title + ' and MetadataId is ' + fields.cm_id + ".", "Base File Upload", req.session.UserName, true);
@@ -462,6 +464,7 @@ exports.uploadwallpaper = function (req, res, next) {
                                                                                                                                                             var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
                                                                                                                                                             //shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
                                                                                                                                                             shell.exec('cp "' + oldpath + '" "' + newpath + '"');
+                                                                                                                                                            shell.exec('chmod 777 ' + newpath);
                                                                                                                                                             th = th + 1;
                                                                                                                                                             if (th == thumb_length) {
                                                                                                                                                                 AdminLog.adminlog(connection_ikon_cms, 'Base File Uploaded for ' + fields.cm_title + ' and MetadataId is ' + fields.cm_id + ".", "Base File Upload", req.session.UserName, true);
@@ -526,6 +529,7 @@ exports.uploadwallpaper = function (req, res, next) {
                                                                                                                                 var newpath = config.site_temp_path + files[f].cf_url.substr(files[f].cf_url.lastIndexOf('/') + 1);
                                                                                                                                 //shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
                                                                                                                                 shell.exec('cp "' + oldpath + '" "' + newpath + '"');
+                                                                                                                                shell.exec('chmod 777 ' + newpath);
                                                                                                                                 f = f + 1;
                                                                                                                                 if (f == file_length) {
                                                                                                                                     var query = connection_ikon_cms.query('select * from content_files_thumbnail where cft_cm_id = ?', [fields.cm_id], function (err, Thumbs) {
@@ -542,6 +546,7 @@ exports.uploadwallpaper = function (req, res, next) {
                                                                                                                                                     var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
                                                                                                                                                     //shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
                                                                                                                                                     shell.exec('cp "' + oldpath + '" "' + newpath + '"');
+                                                                                                                                                    shell.exec('chmod 777 ' + newpath);
                                                                                                                                                     th = th + 1;
                                                                                                                                                     if (th == thumb_length) {
                                                                                                                                                         AdminLog.adminlog(connection_ikon_cms, 'Base File Uploaded for ' + fields.cm_title + ' and MetadataId is ' + fields.cm_id + ".", "Base File Upload", req.session.UserName, true);
@@ -579,6 +584,7 @@ exports.uploadwallpaper = function (req, res, next) {
                                                                                                                                             var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
                                                                                                                                             // shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
                                                                                                                                             shell.exec('cp "' + oldpath + '" "' + newpath + '"');
+                                                                                                                                            shell.exec('chmod 777 ' + newpath);
                                                                                                                                             th = th + 1;
                                                                                                                                             if (th == thumb_length) {
                                                                                                                                                 AdminLog.adminlog(connection_ikon_cms, 'Base File Uploaded for ' + fields.cm_title + ' and MetadataId is ' + fields.cm_id + ".", "Base File Upload", req.session.UserName, true);
@@ -835,6 +841,7 @@ exports.uploadvideo = function (req, res, next) {
                                                                                                                                 var newpath = config.site_temp_path + files[f].cf_url.substr(files[f].cf_url.lastIndexOf('/') + 1);
                                                                                                                                 //shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
                                                                                                                                 shell.exec('cp "' + oldpath + '" "' + newpath + '"');
+                                                                                                                                shell.exec('chmod 777 ' + newpath);
                                                                                                                                 f = f + 1;
                                                                                                                                 if (f == file_length) {
                                                                                                                                     var query = connection_ikon_cms.query('select * from content_files_thumbnail where cft_cm_id = ?', [fields.cm_id], function (err, Thumbs) {
@@ -851,6 +858,7 @@ exports.uploadvideo = function (req, res, next) {
                                                                                                                                                     var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
                                                                                                                                                     //shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
                                                                                                                                                     shell.exec('cp "' + oldpath + '" "' + newpath + '"');
+                                                                                                                                                    shell.exec('chmod 777 ' + newpath);
                                                                                                                                                     th = th + 1;
                                                                                                                                                     if (th == thumb_length) {
                                                                                                                                                         AdminLog.adminlog(connection_ikon_cms, 'Base File Uploaded for ' + fields.cm_title + ' and MetadataId is ' + fields.cm_id + ".", "Base File Upload", req.session.UserName, true);
@@ -888,6 +896,7 @@ exports.uploadvideo = function (req, res, next) {
                                                                                                                                             var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
                                                                                                                                             //shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
                                                                                                                                             shell.exec('cp "' + oldpath + '" "' + newpath + '"');
+                                                                                                                                            shell.exec('chmod 777 ' + newpath);
                                                                                                                                             th = th + 1;
                                                                                                                                             if (th == thumb_length) {
                                                                                                                                                 AdminLog.adminlog(connection_ikon_cms, 'Base File Uploaded for ' + fields.cm_title + ' and MetadataId is ' + fields.cm_id + ".", "Base File Upload", req.session.UserName, true);
@@ -953,6 +962,7 @@ exports.uploadvideo = function (req, res, next) {
                                                                                                                 var newpath = config.site_temp_path + files[f].cf_url.substr(files[f].cf_url.lastIndexOf('/') + 1);
                                                                                                                 // shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
                                                                                                                 shell.exec('cp "' + oldpath + '" "' + newpath + '"');
+                                                                                                                shell.exec('chmod 777 ' + newpath);
                                                                                                                 f = f + 1;
                                                                                                                 if (f == file_length) {
                                                                                                                     var query = connection_ikon_cms.query('select * from content_files_thumbnail where cft_cm_id = ?', [fields.cm_id], function (err, Thumbs) {
@@ -969,6 +979,7 @@ exports.uploadvideo = function (req, res, next) {
                                                                                                                                     var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
                                                                                                                                     //shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
                                                                                                                                     shell.exec('cp "' + oldpath + '" "' + newpath + '"');
+                                                                                                                                    shell.exec('chmod 777 ' + newpath);
                                                                                                                                     th = th + 1;
                                                                                                                                     if (th == thumb_length) {
                                                                                                                                         AdminLog.adminlog(connection_ikon_cms, 'Base File Uploaded for ' + fields.cm_title + ' and MetadataId is ' + fields.cm_id + ".", "Base File Upload", req.session.UserName, true);
@@ -1006,6 +1017,7 @@ exports.uploadvideo = function (req, res, next) {
                                                                                                                             var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
                                                                                                                             //shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
                                                                                                                             shell.exec('cp "' + oldpath + '" "' + newpath + '"');
+                                                                                                                            shell.exec('chmod 777 ' + newpath);
                                                                                                                             th = th + 1;
                                                                                                                             if (th == thumb_length) {
                                                                                                                                 AdminLog.adminlog(connection_ikon_cms, 'Base File Uploaded for ' + fields.cm_title + ' and MetadataId is ' + fields.cm_id + ".", "Base File Upload", req.session.UserName, true);
@@ -1249,6 +1261,7 @@ exports.uploadaudio = function (req, res, next) {
                                                                                                             var newpath = config.site_temp_path + files[f].cf_url.substr(files[f].cf_url.lastIndexOf('/') + 1);
                                                                                                             //shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
                                                                                                             shell.exec('cp "' + oldpath + '" "' + newpath + '"');
+                                                                                                            shell.exec('chmod 777 ' + newpath);
                                                                                                             f = f + 1;
                                                                                                             if (f == file_length) {
                                                                                                                 var query = connection_ikon_cms.query('select * from content_files_thumbnail where cft_cm_id = ?', [fields.cm_id], function (err, Thumbs) {
@@ -1265,6 +1278,7 @@ exports.uploadaudio = function (req, res, next) {
                                                                                                                                 var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
                                                                                                                                 // shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
                                                                                                                                 shell.exec('cp "' + oldpath + '" "' + newpath + '"');
+                                                                                                                                shell.exec('chmod 777 ' + newpath);
                                                                                                                                 th = th + 1;
                                                                                                                                 if (th == thumb_length) {
                                                                                                                                     AdminLog.adminlog(connection_ikon_cms, 'Base File Uploaded for ' + fields.cm_title + ' and MetadataId is ' + fields.cm_id + ".", "Base File Upload", req.session.UserName, true);
@@ -1302,6 +1316,7 @@ exports.uploadaudio = function (req, res, next) {
                                                                                                                         var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
                                                                                                                         // shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
                                                                                                                         shell.exec('cp "' + oldpath + '" "' + newpath + '"');
+                                                                                                                        shell.exec('chmod 777 ' + newpath);
                                                                                                                         th = th + 1;
                                                                                                                         if (th == thumb_length) {
                                                                                                                             AdminLog.adminlog(connection_ikon_cms, 'Base File Uploaded for ' + fields.cm_title + ' and MetadataId is ' + fields.cm_id + ".", "Base File Upload", req.session.UserName, true);
@@ -1500,6 +1515,7 @@ exports.uploadappsgame = function (req, res, next) {
                                                                                                     var oldpath = config.site_base_path + files[f].cf_url;
                                                                                                     var newpath = config.site_temp_path + files[f].cf_url.substr(files[f].cf_url.lastIndexOf('/') + 1);
                                                                                                     shell.exec('cp "' + oldpath + '" "' + newpath + '"');
+                                                                                                    shell.exec('chmod 777 ' + newpath);
                                                                                                     f = f + 1;
                                                                                                     if (f == file_length) {
                                                                                                         var query = connection_ikon_cms.query('select * from content_files_thumbnail where cft_cm_id = ?', [fields.cm_id], function (err, Thumbs) {
@@ -1516,6 +1532,7 @@ exports.uploadappsgame = function (req, res, next) {
                                                                                                                         var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
                                                                                                                         //  shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
                                                                                                                         shell.exec('cp "' + oldpath + '" "' + newpath + '"');
+                                                                                                                        shell.exec('chmod 777 ' + newpath);
                                                                                                                         th = th + 1;
                                                                                                                         if (th == thumb_length) {
                                                                                                                             AdminLog.adminlog(connection_ikon_cms, 'App File Uploaded for ' + fields.cm_title + ' and MetadataId is ' + fields.cm_id + ".", "App File Upload", req.session.UserName, true);
@@ -1553,6 +1570,7 @@ exports.uploadappsgame = function (req, res, next) {
                                                                                                                 var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
                                                                                                                 // shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
                                                                                                                 shell.exec('cp "' + oldpath + '" "' + newpath + '"');
+                                                                                                                shell.exec('chmod 777 ' + newpath);
                                                                                                                 th = th + 1;
                                                                                                                 if (th == thumb_length) {
                                                                                                                     AdminLog.adminlog(connection_ikon_cms, 'App File Uploaded for ' + fields.cm_title + ' and MetadataId is ' + fields.cm_id + ".", "App File Upload", req.session.UserName, true);
@@ -1764,6 +1782,7 @@ exports.uploadtext = function (req, res, next) {
                                                                                                     var newpath = config.site_temp_path + files[f].cf_url.substr(files[f].cf_url.lastIndexOf('/') + 1);
                                                                                                     //shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
                                                                                                     shell.exec('cp "' + oldpath + '" "' + newpath + '"');
+                                                                                                    shell.exec('chmod 777 ' + newpath);
                                                                                                     f = f + 1;
                                                                                                     if (f == file_length) {
                                                                                                         var query = connection_ikon_cms.query('select * from content_files_thumbnail where cft_cm_id = ?', [fields.cm_id], function (err, Thumbs) {
@@ -1779,6 +1798,7 @@ exports.uploadtext = function (req, res, next) {
                                                                                                                         var oldpath = config.site_base_path + Thumbs[th].cft_thumbnail_img_browse;
                                                                                                                         var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
                                                                                                                         shell.exec('cp "' + oldpath + '" "' + newpath + '"');
+                                                                                                                        shell.exec('chmod 777 ' + newpath);
                                                                                                                         //shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
                                                                                                                         th = th + 1;
                                                                                                                         if (th == thumb_length) {
@@ -1817,6 +1837,7 @@ exports.uploadtext = function (req, res, next) {
                                                                                                                 var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
                                                                                                                 //shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
                                                                                                                 shell.exec('cp "' + oldpath + '" "' + newpath + '"');
+                                                                                                                shell.exec('chmod 777 ' + newpath);
                                                                                                                 th = th + 1;
                                                                                                                 if (th == thumb_length) {
                                                                                                                     AdminLog.adminlog(connection_ikon_cms, 'Text File Uploaded for ' + fields.cm_title + ' and MetadataId is ' + fields.cm_id + ".", "Base File Upload", req.session.UserName, true);
@@ -2249,6 +2270,7 @@ exports.uploadaudiozip = function (req, res, next) {
                                                                                                                                        var newpath = config.site_temp_path + files[f].cf_url.substr(files[f].cf_url.lastIndexOf('/') + 1);
                                                                                                                                        //shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
                                                                                                                                        shell.exec('cp "' + oldpath + '" "' + newpath + '"');
+                                                                                                                                       shell.exec('chmod 777 ' + newpath);
                                                                                                                                        f = f + 1;
                                                                                                                                        if (f == file_length) {
                                                                                                                                            var query = connection_ikon_cms.query('select * from content_files_thumbnail where cft_cm_id = ?', [fields.cm_id], function (err, Thumbs) {
@@ -2264,6 +2286,7 @@ exports.uploadaudiozip = function (req, res, next) {
                                                                                                                                                            var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
                                                                                                                                                            //shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
                                                                                                                                                            shell.exec('cp "' + oldpath + '" "' + newpath + '"');
+                                                                                                                                                           shell.exec('chmod 777 ' + newpath);
                                                                                                                                                            th = th + 1;
                                                                                                                                                            if (th == thumb_length) {
                                                                                                                                                                callback(null, null);
@@ -2298,6 +2321,7 @@ exports.uploadaudiozip = function (req, res, next) {
                                                                                                                                                    var newpath = config.site_temp_path + Thumbs[th].cft_thumbnail_img_browse.substr(Thumbs[th].cft_thumbnail_img_browse.lastIndexOf('/') + 1);
                                                                                                                                                    //shell.exec('ffmpeg -y  -i "' + oldpath + '" -c copy ' + newpath);
                                                                                                                                                    shell.exec('cp "' + oldpath + '" "' + newpath + '"');
+                                                                                                                                                   shell.exec('chmod 777 ' + newpath);
                                                                                                                                                    th = th + 1;
                                                                                                                                                    if (th == thumb_length) {
                                                                                                                                                        callback(err, null);
